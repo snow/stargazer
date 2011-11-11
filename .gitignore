@@ -1,0 +1,8 @@
+# generated
+*.pyc
+*.pyo
+# eclipse project config
+.project
+.pydevproject
+# db
+sqlite3.db
