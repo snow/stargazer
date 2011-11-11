@@ -1,0 +1,55 @@
+{% extends 'demo/page_shell.html' %}
+
+{% block page_title %}发帖{% endblock %}
+{% block page_id %}post_create{% endblock %}
+{% block bd %}
+<form action="" method="post">
+  <textarea></textarea>
+</form>
+<div id="addrbar">
+  <span class="stat"></span>
+  <span class="addr"></span>
+  <a class="teleport" href="javascript:void(0)">[传送门]</a>
+</div>
+<!-- <div id="addr">科华北路25号&nbsp;<a href="javascript:void(0)">[修改]</a></div> -->
+<script>
+(function($){
+    var j_addrbar = $('#addrbar'),
+        j_stat = j_addrbar.find('.stat'),
+        j_addr = j_addrbar.find('.addr'),
+        j_teleport = j_addrbar.find('.teleport'),
+        
+        lat = false
+        lng = false;
+        
+    if(navigator.geolocation) {
+        j_stat.removeClass('permission').addClass('accuring').text('accuring location');
+        
+        navigator.geolocation.getCurrentPosition(function(position) { 
+            j_stat.removeClass('accuring').addClass('got');
+            
+            j_stat.text('got location');
+            
+            lat = position.coords.latitude;
+            lng = position.coords.longitude;
+            
+            $.ajax('/utils/latlng2addr', {
+                data: {
+                    'lat': lat,
+                    'lng': lng
+                },
+                success: function(data){
+                    j_addr.text(data);
+                },
+                dataType: 'text'});
+        }, function() {
+            j_stat.removeClass('permission').addClass('failed').
+                text($('failed to get location'));
+        });    
+    } else {
+        j_stat.removeClass('permission').addClass('failed').
+            text($('browser doesnt support location'));
+    }        
+})(jQuery);
+</script>
+{% endblock %}
