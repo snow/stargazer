@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
 
-from demo.views import UnderConstructionView, IndexView, CreatePostView, LatLng2Addr
+from demo.views import UnderConstructionView, IndexView, CreatePostView,\
+                       LatLng2AddrView
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
