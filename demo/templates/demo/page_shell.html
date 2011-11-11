@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,\ 
+                                 user-scalable=no" />
+  <meta name="language" content="zh_cn" />
+  <title>{% block page_title %}Stargazer{% endblock %}</title>
+
+  <link rel="stylesheet" type="text/css" href="/s/c/reset.css" />
+  <link rel="stylesheet" type="text/css" href="/s/c/common.css" />
+  <script type="text/javascript" src="/s/s/jquery.min.js"></script>
+  <script type="text/javascript" src="/s/s/common.js"></script>
+</head>
+
+<body>
+  <div id="{% block page_id %}{% endblock %}" class="page">
+    <div id="hd" class="layout">
+      {% block logo %}<a class="logo" href="/">LOGO</a>{% endblock %}
+      {% block hd_buttons %}<a class="post" href="post/create">+</a>{% endblock %}
+    </div>
+    <div id="bd" class="layout">{% block bd %}{% endblock %}</div>
+  </div>
+</body>
+</html>
