@@ -1,0 +1,40 @@
+{% extends 'demo/page_shell.html' %}
+
+{% block page_title %}最近帖子{% endblock %}
+{% block page_id %}post_list_recent{% endblock %}
+
+{% block bd %}
+<div id="addrbar">
+  <span class="stat"></span>
+  <span class="addr">{{ params.addr }}</span>
+  <span class="lat">{{ params.lat }}</span>
+  <span class="lng">{{ params.lng }}</span>
+</div>
+
+<div id="stream" class="{{ params.sorter }}" sorter="{{ params.sorter }}"/>
+
+<script>
+(function($){
+    var j_bar = $('#addrbar'),
+        j_lat = j_bar.find('.lat'),
+        j_lng = j_bar.find('.lng'),
+        j_stream = $('#stream'),
+        sorter = j_stream.attr('sorter'),
+        
+        API_URI = '/post/load/'+sorter+'/';
+        
+    s.init_addrbar(j_bar, function(){
+        $.ajax(API_URI, {
+            'type': 'GET',
+            'data': {
+                'lat': j_lat.text(),
+                'lng': j_lng.text()
+            },
+            'success': function(data){
+                j_stream.append(data);
+            }
+        });
+    });
+})(jQuery);
+</script>
+{% endblock %}
