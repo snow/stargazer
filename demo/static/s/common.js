@@ -138,3 +138,114 @@
         }
     };
 })(jQuery);
+
+/**
+ * init latlng and address
+ * -----------------------------
+ */
+(function($){
+    var j_bar,
+        j_stat,
+        j_addr,
+        j_lat,
+        j_lng,
+        
+        NO_GEO_MSG = '该设备不支持定位 /. .\\',
+        
+        LOCATING_MSG = '正在获取经纬度...',
+        FAILED_LOCATION_MSG = '获取位置失败 /. .\\',
+        ADDRESSING_MSG = '正在获取地址...',
+        FAILED_ADDRESSING_MSG = '获取地址失败 /. .\\';    
+    
+    function init_latlng(){
+        if('' !== j_lat.text() && '' !== j_lng.text()){
+            console && console.log('latlng already initialised');
+            j_bar.trigger('done_latlng');
+            return;
+        }
+        
+        if(navigator.geolocation) {
+            j_stat.addClass('locating').text(LOCATING_MSG);
+            console && console.log('acquiring location');
+          
+            navigator.geolocation.getCurrentPosition(function(position) { 
+                j_stat.removeClass('locating').empty();
+                console && console.log('got location from browser');
+                
+                j_lat.text(position.coords.latitude)
+                j_lng.text(position.coords.longitude)
+                
+                if(position.address){
+                    console && console.log('got address from browser');
+                    
+                    addr = ''
+                    if(position.address.street){
+                        addr += position.address.street
+                    }
+                    if(position.address.streetNumber){
+                        addr += ' ' + position.address.streetNumber
+                    }
+                  
+                    j_addr.text(addr)
+                }
+                
+                j_bar.trigger('done_latlng');
+            }, function() {
+                j_stat.removeClass('locating').addClass('failed').
+                    text(FAILED_LOCATION_MSG);
+            });
+        } else {
+            j_stat.addClass('failed').text(NO_GEO_MSG);
+        }
+    }
+    
+    function init_addr(){
+        if('' !== j_addr.text()){
+            console && console.log('address already initialised');
+            j_bar.trigger('done_addressing');
+            return;
+        }
+        
+        j_stat.addClass('addressing').text(ADDRESSING_MSG);
+        console && console.log('acquiring address from server');
+        $.ajax('/utils/latlng2addr', {
+            data: {
+                'lat': j_lat.text(),
+                'lng': j_lng.text()
+            },
+            success: function(data){
+                j_stat.removeClass('addressing').empty();
+                j_addr.text(data);
+                j_bar.trigger('done_addressing');
+            },
+            error: function(){
+                j_stat.removeClass('addressing').addClass('failed').
+                    text(FAILED_ADDRESSING_MSG);
+            },
+            dataType: 'text'});
+    }
+    
+    s.init_addrbar = function(t, callback){
+        j_bar = t;
+        j_stat = j_bar.find('.stat');
+        j_addr = j_bar.find('.addr');
+        j_lat = j_bar.find('.lat');
+        j_lng = j_bar.find('.lng');
+            
+        j_bar.bind('init_latlng', init_latlng).
+            bind('done_latlng', function(){
+                console && console.log('done_latlng');
+                j_bar.trigger('init_addr');
+            }).
+            bind('init_addr', init_addr).
+            bind('done_addressing', function(){
+                console && console.log('done_addressing');
+            });
+            
+        if('function' == typeof callback){
+            j_bar.bind('done_addressing', callback);
+        }    
+        
+        j_bar.trigger('init_latlng');
+    }
+})(jQuery);

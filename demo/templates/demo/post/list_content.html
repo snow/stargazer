@@ -1,0 +1,11 @@
+{% for e in object_list %}
+<div class="li stream-item">
+  <a class="hate" href="javascript:void(0)">{{ e.bans.count }}</a>
+  <a class="like" href="javascript:void(0)">{{ e.likes.count }}</a>
+  <img class="avatar" src="{{ e.author.avatar_uri }}" alt="" />
+  <div class="username">{{ e.author.name }}</div>
+  <div class="content">{{ e.content }}</div>   
+  <div class="addr">{{ e.address }}</div>
+  <div class="meta"><span class="time">{{ e.created|timesince }}</span></div>
+</div>
+{% endfor %}
