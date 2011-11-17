@@ -3,13 +3,16 @@ import urllib2
 import json
 import logging
 
-from django.views.generic import View, TemplateView, CreateView, ListView
-from django.http import HttpResponse
+from django.views.generic import View, TemplateView, CreateView, ListView, \
+                                 FormView
+from django.http import HttpResponse, HttpResponseRedirect
 from django.forms import ModelForm, Textarea, HiddenInput
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 from django.utils.http import urlquote
+from django.contrib.auth.forms import UserCreationForm
 
 from core.models import Post, Author
 
@@ -80,7 +83,12 @@ class RecentPostListView(ListView):
     def dispatch(self, request, *args, **kwargs):
         self.lat = float(request.GET['lat'])
         self.lng = float(request.GET['lng'])
-        self.queryset = Post.recent.with_user(request.user).nearby(self.lat, self.lng).all()
+        
+        if request.user.is_authenticated():        
+            self.queryset = Post.recent.with_user(request.user).\
+                nearby(self.lat, self.lng).all()
+        else:
+            self.queryset = Post.recent.nearby(self.lat, self.lng).all()
         
         return super(RecentPostListView, self).dispatch(request, *args, 
                                                         **kwargs)
@@ -118,6 +126,27 @@ class BanPostView(View):
                                 'act': act,
                             }), 
                             content_type='application/json')
+        
+class SignupView(FormView):
+    '''TODO'''
+    form_class = UserCreationForm
+    template_name = 'registration/signup.html'
+    
+    def post(self, request, *args, **kwargs):
+        form = self.get_form(self.get_form_class())
+        if form.is_valid():
+            form.save()
+            user = authenticate(username=form.cleaned_data['username'], 
+                                password=form.cleaned_data['password1'])            
+            if user is not None:
+                login(request, user)
+                self.success_url = request.GET['next']
+                return self.form_valid(form)
+            else:
+                raise Exception('failed to auth newly-created user')
+        else:
+            return self.form_invalid(form)
+        
     
 class LatLng2AddrView(View):
     API_URI = 'http://maps.googleapis.com/maps/api/geocode/json'

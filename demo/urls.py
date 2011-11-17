@@ -1,9 +1,9 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib.auth.decorators import login_required
 
-from demo.views import UnderConstructionView, IndexView, CreatePostView,\
+from demo.views import UnderConstructionView, IndexView, CreatePostView, \
                        PostListContainerView, RecentPostListView, \
-                       LikePostView, BanPostView, \
+                       LikePostView, BanPostView, SignupView, \
                        LatLng2AddrView
 
 # Uncomment the next two lines to enable the admin:
@@ -26,4 +26,6 @@ urlpatterns = patterns('demo.views',
     url(r'^teleport$', UnderConstructionView.as_view()),
     
     url(r'^utils/latlng2addr$', LatLng2AddrView.as_view()),
+    
+    url(r'^accounts/signup/$', SignupView.as_view()),
 )
