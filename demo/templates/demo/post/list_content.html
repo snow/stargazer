@@ -1,6 +1,6 @@
 {% for e in object_list %}
-<div class="li stream-item">
-  <a class="hate" href="javascript:void(0)">{{ e.bans.count }}</a>
+<div class="li stream-item {% if e.is_liked %}on{% endif %}" sid="{{ e.id }}">
+  <a class="ban" href="javascript:void(0)">{{ e.bans.count }}</a>
   <a class="like" href="javascript:void(0)">{{ e.likes.count }}</a>
   <img class="avatar" src="{{ e.author.avatar_uri }}" alt="" />
   <div class="username">{{ e.author.name }}</div>

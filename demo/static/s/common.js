@@ -1,141 +1,100 @@
+/**
+ * namespace and basic
+ * --------------------
+ */
+(function($){
+    window.s = {}
+})(jQuery);
+
+/*
+ * tools for stream
+ * ------------------
+ */
 (function($) {
-    window.s = {
-        sync_load: function(uri){
-            var data;
-            
-            $.ajax(uri, {
-                success : function(txt) {
-                    data = txt;
-                },
-                dataType : 'text',
-                async : false
-            });
-            
-            return data;
-        }
-    };
-
-    s.load_com = function(com) {
-        $.ajax('/com/' + com + '.html', {
-            success : function(data) {
-                document.write(data);
-            },
-            dataType : 'text',
-            async : false
-        });
-    };
     
-    /*
-     * tools that only used in demo
-     * --------------------------------
-     */
-    s.ex = {};
-    
-    s.ex.stream = {
-        TYPE: {
-            txt: 'txt',
-            img: 'img',
-            video: 'video',
-            voice: 'voice'
-        },
-        
-        templates: {
-            item: false,
-            item_s: false,
-            txt: false,
-            image: false,
-        },
-        
-        get_item: function(type){
-            var tpl = s.ex.stream.templates;
-                
-            if(!tpl['item']){
-                tpl['item'] = s.sync_load('/com/stream/item_tpl.html');
-            }
-            
-            if(!tpl[type]){
-                tpl[type] = s.sync_load('/com/stream/type_tpl/' +
-                                             type + '.html');
-            }
-            
-            return tpl['item'].replace('${content}', tpl[type]);
-        },
-        
-        get_item_s: function(type){
-            var tpl = s.ex.stream.templates;
-                
-            if(!tpl['item_s']){
-                tpl['item_s'] = s.sync_load('/com/stream/item_s_tpl.html');
-            }
-            
-            if(!tpl[type]){
-                tpl[type] = s.sync_load('/com/stream/type_tpl/' +
-                                             type + '.html');
-            }
-            
-            return tpl['item_s'].replace('${content}', tpl[type]);
-        }
-    };
-    
-    var msg_source = [
-        '',
-        'twitter',
-        'g+',
-        'flickr'
-    ];
-
-    s.ex.get_msg_source = function() {
-        return msg_source[Math.floor(Math.random() * msg_source.length)]
-    };
-    
-    var usernames = [
-        'snowhs',
-        '王小明',
-        'goog',
-        '成都商报 V'
-    ];
-    
-    s.ex.get_username = function() {
-        return usernames[Math.floor(Math.random() * usernames.length)]
-    };
-    
-    s.ex.is_v = function() {
-        return (66 < Math.random() * 100)?
-               'V':
-               ''
-    };
-    
-    /*
-     * tools for stream
-     * ------------------
-     */
     s.stream = {}
-
-    s.stream.hate = function(anchor) {
-        var j_stream_item = $(anchor).closest('.stream-item');
-
-        j_stream_item.hide('fast', function() {
-            $(this).remove();
+    
+    var j_lat,
+        j_lng,
+        j_stream,
+        sorter,
+        CONTENT_URI = '/post/load/'+sorter+'/',
+        csrf;
+    
+    s.stream.init = function(){
+        csrf = $('[name=csrfmiddlewaretoken]').val();
+        j_bar = $('#addrbar');
+        j_lat = j_bar.find('.lat');
+        j_lng = j_bar.find('.lng');
+        j_stream = $('#stream');
+        sorter = j_stream.attr('sorter');
+        
+        CONTENT_URI = '/post/load/'+sorter+'/';
+        
+        j_stream.delegate('.stream-item .ban', 'click', function() {
+            s.stream.ban(this);
+        }).delegate('.stream-item .like', 'click', function() {
+            s.stream.like(this);
         });
+        
+        s.stream.load();
+    };
+    
+    s.stream.load = function(content_uri){
+        $.ajax(CONTENT_URI, {
+            'type': 'GET',
+            'data': {
+                'lat': j_lat.text(),
+                'lng': j_lng.text()
+            },
+            'success': function(data){
+                j_stream.append(data);
+            }
+        });
+    };
+
+    s.stream.ban = function(anchor) {
+        var j_stream_item = $(anchor).closest('.stream-item'),
+            id = j_stream_item.attr('sid');
+        
+        return $.ajax('/post/ban/',{
+            'type': 'POST',
+            'data':{'id':id, 'csrfmiddlewaretoken': csrf},
+            'success': function(data){
+                j_stream_item.hide('fast', function() {
+                    $(this).remove();
+                });
+            },
+            'dataType':'json'
+        });
+
     };
 
     s.stream.like = function(anchor) {
         var j_anchor = $(anchor),
             cur_like_cnt = parseInt(j_anchor.text()), 
-            j_stream_item = j_anchor.closest('.stream-item');
+            j_stream_item = j_anchor.closest('.stream-item'),
+            id = j_stream_item.attr('sid');
             
         if('NaN' === cur_like_cnt.toString())
         {
             cur_like_cnt = 0;
         }
 
-        if(j_stream_item.hasClass('on')) {
-            j_anchor.text(Math.max(0, cur_like_cnt-1));
-            j_stream_item.removeClass('on');
-        } else {            
-            j_anchor.text(cur_like_cnt+1);
-            j_stream_item.addClass('on');
-        }
+        return $.ajax('/post/like/',{
+            'type': 'POST',
+            'data':{'id':id, 'csrfmiddlewaretoken': csrf},
+            'success': function(data){
+                if(j_stream_item.hasClass('on')) {
+                    j_anchor.text(Math.max(0, cur_like_cnt-1));
+                    j_stream_item.removeClass('on');
+                } else {            
+                    j_anchor.text(cur_like_cnt+1);
+                    j_stream_item.addClass('on');
+                }
+            },
+            'dataType':'json'
+        });
     };
 })(jQuery);
 
@@ -149,6 +108,11 @@
         j_addr,
         j_lat,
         j_lng,
+        
+        j_form,
+        j_flat,
+        j_flng,
+        j_faddr,
         
         NO_GEO_MSG = '该设备不支持定位 /. .\\',
         
@@ -199,6 +163,17 @@
         }
     }
     
+    function after_latlng(){
+        if(j_form){
+            j_flat.val(j_lat.text());
+            j_flng.val(j_lng.text());
+        }
+        
+        console && console.log('done_latlng');
+        
+        j_bar.trigger('init_addr');
+    }
+    
     function init_addr(){
         if('' !== j_addr.text()){
             console && console.log('address already initialised');
@@ -225,25 +200,39 @@
             dataType: 'text'});
     }
     
-    s.init_addrbar = function(t, callback){
-        j_bar = t;
+    function after_addr(){
+        if(j_form){
+            j_faddr.val(j_addr.text());
+        }
+        console && console.log('done_addressing');
+    }
+    
+    s.init_addrbar = function(params){
+        j_bar = $('#addrbar');
+        
+        if(0 === j_bar.length){
+            return;
+        }
+        
         j_stat = j_bar.find('.stat');
         j_addr = j_bar.find('.addr');
         j_lat = j_bar.find('.lat');
         j_lng = j_bar.find('.lng');
+        
+        if(params.form){
+            j_form = params.form,
+            j_flat = j_form.find('[name=latitude]'),
+            j_flng = j_form.find('[name=longitude]'),
+            j_faddr = j_form.find('[name=address]');
+        }
             
         j_bar.bind('init_latlng', init_latlng).
-            bind('done_latlng', function(){
-                console && console.log('done_latlng');
-                j_bar.trigger('init_addr');
-            }).
+            bind('done_latlng', after_latlng).
             bind('init_addr', init_addr).
-            bind('done_addressing', function(){
-                console && console.log('done_addressing');
-            });
+            bind('done_addressing', after_addr);
             
-        if('function' == typeof callback){
-            j_bar.bind('done_addressing', callback);
+        if('function' == typeof params.callback){
+            j_bar.bind('done_addressing', params.callback);
         }    
         
         j_bar.trigger('init_latlng');
