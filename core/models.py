@@ -65,11 +65,12 @@ class UserManagerMixin(models.Manager):
         return self
     
     def get_query_set(self):
-        if not self.model.current_user:
-            raise Exception()
+        if self.model.current_user:
+            return super(UserManagerMixin, self).get_query_set().\
+                exclude(bans=self.model.current_user)
+        else:
+            return super(UserManagerMixin, self).get_query_set()
         
-        return super(UserManagerMixin, self).get_query_set().\
-            exclude(bans=self.model.current_user)
 
 class PostRecentManager(UserManagerMixin, PostGeoManagerMixin):
     def get_query_set(self):
@@ -100,6 +101,9 @@ class Post(models.Model):
     
     objects = models.Manager()
     recent = PostRecentManager()
+    
+    current_user = False
         
     def is_liked(self):
-        return Post.current_user and self.likes.filter(id=Post.current_user.id).count()
+        return Post.current_user and \
+            self.likes.filter(id=Post.current_user.id).count()
