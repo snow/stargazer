@@ -1,4 +1,5 @@
 import logging
+import hashlib
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -42,6 +43,10 @@ class Author(models.Model):
     # for external account
     external_id = models.CharField(max_length=255, blank=True)
     token = models.CharField(max_length=255, blank=True)
+    
+    def gavatar_uri(self):
+        return 'http://www.gravatar.com/avatar/{}?s=48&d=monsterid'.\
+            format(hashlib.md5(self.owner.email.strip().lower()).hexdigest())
 
 class PostGeoManagerMixin(models.Manager):
     def nearby(self, lat, lng, range=2000):
