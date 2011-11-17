@@ -20,14 +20,14 @@
   #stream .li .username {margin-bottom:5px; height:30px; line-height:30px; font-weight:bold}
     
   #stream .li .like,
-  #stream .li .hate {display:block; float:right; padding:0 10px 0 33px; 
+  #stream .li .ban {display:block; float:right; padding:0 10px 0 33px; 
     height:28px; line-height:28px; text-align:right; color:#666;
     text-decoration:none; background:#eee; background-position:8px center; 
     background-repeat:no-repeat}
   #stream .li .like {background-image:url(/s/i/heart-unselected-16.png)}
     #stream .li.on .like {background-image:url(/s/i/heart-selected-16.png); 
       background-color:#ddd}
-  #stream .li .hate {background-image:url(/s/i/del-16.png); border-left:1px dashed #ccc}
+  #stream .li .ban {background-image:url(/s/i/del-16.png); border-left:1px dashed #ccc}
   
   #stream .li .content, 
   #stream .li .addr,

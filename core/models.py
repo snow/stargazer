@@ -42,22 +42,33 @@ class Author(models.Model):
     # for external account
     external_id = models.CharField(max_length=255, blank=True)
     token = models.CharField(max_length=255, blank=True)
-    
 
-class PostManagerGeoMixin(models.Manager):
+class PostGeoManagerMixin(models.Manager):
     def nearby(self, lat, lng, range=2000):
         lat_offset = geo.get_lat_offset_by_distance(range)
         lng_offset = geo.get_lng_offset_by_distance(range, lat)
         
-        return super(RecentPostManager, self).get_query_set().\
+        return self.get_query_set().\
                 filter(latitude__gte=lat-lat_offset).\
                 filter(latitude__lte=lat+lat_offset).\
                 filter(longitude__gte=lng-lng_offset).\
                 filter(longitude__lte=lng+lng_offset)
+                
+class UserManagerMixin(models.Manager):
+    def with_user(self, user):
+        self.model.current_user = user
+        return self
+    
+    def get_query_set(self):
+        if not self.model.current_user:
+            raise Exception()
+        
+        return super(UserManagerMixin, self).get_query_set().\
+            exclude(bans=self.model.current_user)
 
-class RecentPostManager(PostManagerGeoMixin):
-    def nearby(self, lat, lng, range=2000):
-        return super(RecentPostManager, self).nearby(lat, lng, range).\
+class PostRecentManager(UserManagerMixin, PostGeoManagerMixin):
+    def get_query_set(self):
+        return super(PostRecentManager, self).get_query_set().\
             order_by('-created')
     
 class Post(models.Model):
@@ -82,4 +93,8 @@ class Post(models.Model):
     likes = models.ManyToManyField(User, related_name='likes')
     bans = models.ManyToManyField(User, related_name='bans')
     
-    recent = RecentPostManager()
+    objects = models.Manager()
+    recent = PostRecentManager()
+        
+    def is_liked(self):
+        return Post.current_user and self.likes.filter(id=Post.current_user.id).count()

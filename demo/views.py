@@ -47,8 +47,7 @@ class CreatePostView(CreateView):
     
     def form_valid(self, form):
         post = form.instance
-        #post.author
-        #author = request.user
+        
         if 0 == self.user.author_set.filter(source=Author.T_LOCAL).count():
             author = Author(name=self.user.username, source=Author.T_LOCAL, 
                             owner=self.user)
@@ -81,13 +80,44 @@ class RecentPostListView(ListView):
     def dispatch(self, request, *args, **kwargs):
         self.lat = float(request.GET['lat'])
         self.lng = float(request.GET['lng'])
-        self.queryset = list(Post.recent.nearby(self.lat, self.lng).all())
-        
-        #from django.db import connection
-        #l.info(connection.queries)
+        self.queryset = Post.recent.with_user(request.user).nearby(self.lat, self.lng).all()
         
         return super(RecentPostListView, self).dispatch(request, *args, 
                                                         **kwargs)
+        
+class LikePostView(View):
+    '''TODO'''
+    def post(self, request):
+        post = Post.objects.get(pk=request.POST['id'])
+        if 0 == post.likes.filter(id=request.user.id).count():
+            post.likes.add(request.user)
+            act = 'added'
+        else:
+            post.likes.remove(request.user)
+            act = 'removed'
+            
+        return HttpResponse(json.dumps({
+                                'done': True,
+                                'act': act,
+                            }), 
+                            content_type='application/json')
+
+class BanPostView(View):        
+    '''TODO'''
+    def post(self, request):
+        post = Post.objects.get(pk=request.POST['id'])
+        if 0 == post.bans.filter(id=request.user.id).count():
+            post.bans.add(request.user)
+            act = 'added'
+        else:
+            post.bans.remove(request.user)
+            act = 'removed'
+            
+        return HttpResponse(json.dumps({
+                                'done': True,
+                                'act': act,
+                            }), 
+                            content_type='application/json')
     
 class LatLng2AddrView(View):
     API_URI = 'http://maps.googleapis.com/maps/api/geocode/json'

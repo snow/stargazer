@@ -15,6 +15,7 @@
 
 <body>
   <div id="{% block page_id %}{% endblock %}" class="page">
+    {% csrf_token %}
     <div id="hd" class="layout">
       {% block logo %}<a class="logo" href="/">LOGO</a>{% endblock %}
       {% block hd_buttons %}<a class="post" href="/post/create">+</a>{% endblock %}

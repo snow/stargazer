@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 
 from demo.views import UnderConstructionView, IndexView, CreatePostView,\
                        PostListContainerView, RecentPostListView, \
+                       LikePostView, BanPostView, \
                        LatLng2AddrView
 
 # Uncomment the next two lines to enable the admin:
@@ -18,6 +19,9 @@ urlpatterns = patterns('demo.views',
         PostListContainerView.as_view()),
     
     url(r'^post/load/recent/', RecentPostListView.as_view()),
+    
+    url(r'^post/like/$', login_required(LikePostView.as_view())),
+    url(r'^post/ban/$', login_required(BanPostView.as_view())),
     
     url(r'^teleport$', UnderConstructionView.as_view()),
     
