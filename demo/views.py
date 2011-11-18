@@ -127,9 +127,18 @@ class BanPostView(View):
                             }), 
                             content_type='application/json')
         
+class SgzUserCreationForm(UserCreationForm):
+    '''TODO'''
+    def save(self, commit=True):
+        user = super(SgzUserCreationForm, self).save(commit=False)
+        user.email = '{}@neverland.cc'.format(user.username)
+        if commit:
+            user.save()
+        return user
+                
 class SignupView(FormView):
     '''TODO'''
-    form_class = UserCreationForm
+    form_class = SgzUserCreationForm
     template_name = 'registration/signup.html'
     
     def post(self, request, *args, **kwargs):
@@ -140,7 +149,7 @@ class SignupView(FormView):
                                 password=form.cleaned_data['password1'])            
             if user is not None:
                 login(request, user)
-                self.success_url = request.GET['next']
+                self.success_url = request.GET.get('next', '/post/recent')
                 return self.form_valid(form)
             else:
                 raise Exception('failed to auth newly-created user')
