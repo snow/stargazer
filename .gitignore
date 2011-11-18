@@ -1,6 +1,7 @@
 # generated
 *.pyc
 *.pyo
+*.pid
 # eclipse project config
 .project
 .pydevproject

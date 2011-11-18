@@ -139,6 +139,15 @@
                 j_lat.text(position.coords.latitude)
                 j_lng.text(position.coords.longitude)
                 
+                // due with lattidue and longitude that more than 7 float point
+                // e.g. safari has 8
+                $.each([j_lat, j_lng], function(idx, j_f){
+                    var str = j_f.text(),
+                        pidx = str.indexOf('.');
+                        
+                    j_f.text(str.substr(0, pidx+8));
+                });
+                
                 if(position.address){
                     console && console.log('got address from browser');
                     
