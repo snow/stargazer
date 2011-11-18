@@ -1,7 +1,8 @@
-{% extends 'demo/page_shell.html' %}
+{% extends 'demo/base.html' %}
 
-{% block page_title %}最近帖子{% endblock %}
-{% block page_id %}post_list_recent{% endblock %}
+{% block title %}Feed{% endblock %}
+{% block page_title %}Feed{% endblock %}
+{% block page_id %}post_list_{{ params.sorter }}{% endblock %}
 
 {% block bd %}
 <div id="addrbar">

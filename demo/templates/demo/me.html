@@ -1,0 +1,11 @@
+{% extends 'demo/base.html' %}
+
+{% block title %}{{ params.user.username }}{% endblock %}
+{% block page_title %}{{ params.user.username }}{% endblock %}
+{% block page_id %}index{% endblock %}
+
+{% block bd %}
+<img src="{{ params.user.get_profile.gavatar_uri }}" alt="" />
+{{ params.user.username }}
+<a href="/accounts/logout/">logout</a>
+{% endblock %}

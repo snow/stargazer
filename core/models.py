@@ -21,7 +21,15 @@ l = logging.getLogger(__name__)
 #    
 #    owner = models.ForeignKey(User, null=True, blank=True, default=None)
 #    token = models.CharField(max_length=255, blank=True)
-     
+def _get_gavatar_uri(email):
+    return 'http://www.gravatar.com/avatar/{}?s=48&d=monsterid'.\
+            format(hashlib.md5(email.strip().lower()).hexdigest())
+
+class UserProfile(models.Model):
+    user = models.ForeignKey(User, unique=True)
+    
+    def gavatar_uri(self):
+        return _get_gavatar_uri(self.user.email)     
      
 class Author(models.Model):
     T_LOCAL = 0
@@ -45,8 +53,7 @@ class Author(models.Model):
     token = models.CharField(max_length=255, blank=True)
     
     def gavatar_uri(self):
-        return 'http://www.gravatar.com/avatar/{}?s=48&d=monsterid'.\
-            format(hashlib.md5(self.owner.email.strip().lower()).hexdigest())
+        return _get_gavatar_uri(self.owner.email)
 
 class PostGeoManagerMixin(models.Manager):
     def nearby(self, lat, lng, range=2000):
