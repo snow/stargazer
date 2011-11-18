@@ -13,8 +13,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.utils.http import urlquote
 from django.contrib.auth.forms import UserCreationForm
+from django import forms
 
-from core.models import Post, Author
+from core.models import Post, Author, UserProfile
 
 l = logging.getLogger(__name__)
 
@@ -126,14 +127,22 @@ class BanPostView(View):
                                 'act': act,
                             }), 
                             content_type='application/json')
-        
+
+_USERNAME_HELP = '最多15个字母、数字和 . _ -'        
 class SgzUserCreationForm(UserCreationForm):
     '''TODO'''
+    username = forms.RegexField(label="用户名", max_length=15, 
+        regex=r'^[\w.-]+$', help_text=_USERNAME_HELP, initial=_USERNAME_HELP,
+        error_messages = {'invalid': _USERNAME_HELP})
+    
     def save(self, commit=True):
         user = super(SgzUserCreationForm, self).save(commit=False)
         user.email = '{}@neverland.cc'.format(user.username)
         if commit:
             user.save()
+            profile = UserProfile(user=user)
+            profile.save()
+            
         return user
                 
 class SignupView(FormView):
@@ -155,7 +164,14 @@ class SignupView(FormView):
                 raise Exception('failed to auth newly-created user')
         else:
             return self.form_invalid(form)
+
+class MeView(TemplateView):
+    template_name = 'demo/me.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        kwargs['user'] = request.user
         
+        return super(MeView, self).dispatch(request, *args, **kwargs)
     
 class LatLng2AddrView(View):
     API_URI = 'http://maps.googleapis.com/maps/api/geocode/json'

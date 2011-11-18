@@ -1,5 +1,10 @@
-{% extends 'demo/page_shell.html' %}
+{% extends 'demo/base.html' %}
 {% load url from future %}
+
+{% block title %}登录{% endblock %}
+{% block page_title %}登录{% endblock %}
+{% block page_id %}account_signin{% endblock %}
+{% block hd_buttons %}<!--<a class="submit" href="javascript:void(0)">登录</a>-->{% endblock %}
 
 {% block bd %}
 
@@ -8,21 +13,22 @@
 {% endif %}
 
 <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
-{% csrf_token %}
-<table>
-<tr>
-    <td>{{ form.username.label_tag }}</td>
-    <td>{{ form.username }}</td>
-</tr>
-<tr>
-    <td>{{ form.password.label_tag }}</td>
-    <td>{{ form.password }}</td>
-</tr>
-</table>
+    {{ form.non_field_errors }}
+    <div class="li {% if not form.is_bound %}off{% endif %}">
+        {{ form.username.errors }}
+        {{ form.username.label_tag }}<br />
+        {{ form.username }}
+    </div>
+    <div class="li">
+        {{ form.password.errors }}
+        {{ form.password.label_tag }}<br />
+        {{ form.password }}
+    </div>
+    {% csrf_token %}
 
-<input type="submit" value="login" />
-<a href="/accounts/signup?next={{ next }}">Signup</a>
-<input type="hidden" name="next" value="{{ next }}" />
+    <input type="submit" value="login" />
+    <a href="/accounts/signup?next={{ next }}">Signup</a>
+    <input type="hidden" name="next" value="{{ next }}" />
 </form>
 
 {% endblock %}

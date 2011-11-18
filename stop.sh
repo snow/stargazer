@@ -5,5 +5,7 @@ PROJDIR="/repos/workspace/joyotime/stargazer"
 PIDFILE="$PROJDIR/logs/fcgi.pid"
 
 cd $PROJDIR
-sudo ./stop.sh
-sudo ./manage.py runfcgi pidfile=$PIDFILE host=127.0.0.1 port=3033
+if [ -f $PIDFILE ]; then
+    sudo kill `cat -- $PIDFILE`
+    sudo rm -f -- $PIDFILE
+fi
