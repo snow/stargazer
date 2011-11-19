@@ -14,7 +14,7 @@
 
 <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
     {{ form.non_field_errors }}
-    <div class="li {% if not form.is_bound %}off{% endif %}">
+    <div class="li">
         {{ form.username.errors }}
         {{ form.username.label_tag }}<br />
         {{ form.username }}

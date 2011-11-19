@@ -44,6 +44,18 @@ class CreatePostView(CreateView):
     template_name = 'demo/post/create.html'
     
     user = False
+        
+    def get(self, request, *args, **kwargs):
+        self.object = None
+        
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        
+        return self.render_to_response(
+                   self.get_context_data(form=form,
+                                         lat=request.GET.get('lat', ''),
+                                         lng=request.GET.get('lng', ''),
+                                         addr=request.GET.get('addr', '')))
     
     def post(self, request, *args, **kwargs):
         self.user = request.user
@@ -69,6 +81,9 @@ class CreatePostView(CreateView):
 
 class PostListContainerView(TemplateView):
     template_name = 'demo/post/list.html'
+    
+    def get_context_data(self, **kwargs):
+        return kwargs
     
     def dispatch(self, request, *args, **kwargs):
         kwargs['lat'] = request.GET.get('lat', '')
