@@ -2,21 +2,24 @@
 
 {% block title %}Feed{% endblock %}
 {% block page_title %}Feed{% endblock %}
-{% block page_id %}post_list_{{ params.sorter }}{% endblock %}
+{% block page_id %}post_list_{{ sorter }}{% endblock %}
 
 {% block bd %}
 <div id="addrbar">
   <span class="stat"></span>
-  <span class="addr">{{ params.addr }}</span>
-  <span class="lat">{{ params.lat }}</span>
-  <span class="lng">{{ params.lng }}</span>
+  <span class="addr">{{ addr }}</span>
+  <span class="lat">{{ lat }}</span>
+  <span class="lng">{{ lng }}</span>
 </div>
 
-<div id="stream" class="{{ params.sorter }}" sorter="{{ params.sorter }}"/>
+<div id="stream" class="{{ sorter }}" sorter="{{ sorter }}"/>
 
 <script>
 (function($){
-    s.init_addrbar({'callback': s.stream.init});
+    s.init_addrbar({
+        'callback': s.stream.init,
+        'link': $('#hd .post')
+    });
 })(jQuery);
 </script>
 {% endblock %}
