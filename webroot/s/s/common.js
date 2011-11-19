@@ -116,15 +116,37 @@
         j_flng,
         j_faddr,
         
+        j_link,
+        
+        lat,
+        lng,
+        addr,
+        
         NO_GEO_MSG = '该设备不支持定位 /. .\\',
         
         LOCATING_MSG = '正在获取经纬度...',
         FAILED_LOCATION_MSG = '获取位置失败 /. .\\',
         ADDRESSING_MSG = '正在获取地址...',
-        FAILED_ADDRESSING_MSG = '获取地址失败 /. .\\';    
+        FAILED_ADDRESSING_MSG = '获取地址失败 /. .\\';
+    
+    // due with lattidue and longitude that more than 7 float point
+    // e.g. safari has 8        
+    function trunk_latlng(str){
+        var str = str.toString(),
+            pidx = str.indexOf('.');
+            
+        if(-1 === pidx){
+            return str;
+        } else {
+            return str.substr(0, pidx+8);    
+        }
+    }    
     
     function init_latlng(){
         if('' !== j_lat.text() && '' !== j_lng.text()){
+            lat = trunk_latlng(j_lat.text());
+            lng = trunk_latlng(j_lng.text());
+            
             console && console.log('latlng already initialised');
             j_bar.trigger('done_latlng');
             return;
@@ -138,17 +160,11 @@
                 j_stat.removeClass('locating').empty();
                 console && console.log('got location from browser');
                 
-                j_lat.text(position.coords.latitude)
-                j_lng.text(position.coords.longitude)
+                lat = trunk_latlng(position.coords.latitude);
+                lng = trunk_latlng(position.coords.longitude);
                 
-                // due with lattidue and longitude that more than 7 float point
-                // e.g. safari has 8
-                $.each([j_lat, j_lng], function(idx, j_f){
-                    var str = j_f.text(),
-                        pidx = str.indexOf('.');
-                        
-                    j_f.text(str.substr(0, pidx+8));
-                });
+                j_lat.text(lat);
+                j_lng.text(lng);
                 
                 if(position.address){
                     console && console.log('got address from browser');
@@ -165,9 +181,14 @@
                 }
                 
                 j_bar.trigger('done_latlng');
-            }, function() {
+            }, 
+            function() {
                 j_stat.removeClass('locating').addClass('failed').
                     text(FAILED_LOCATION_MSG);
+            }, 
+            {
+                'enableHighAccuracy': true,
+                'maximumAge': 0,
             });
         } else {
             j_stat.addClass('failed').text(NO_GEO_MSG);
@@ -187,6 +208,8 @@
     
     function init_addr(){
         if('' !== j_addr.text()){
+            addr = j_addr.text()
+            
             console && console.log('address already initialised');
             j_bar.trigger('done_addressing');
             return;
@@ -215,6 +238,24 @@
         if(j_form){
             j_faddr.val(j_addr.text());
         }
+        
+        if(j_link){
+            var href = j_link.attr('href'),
+                params = $.param({
+                    'lat': lat, 
+                    'lng': lng, 
+                    'addr': addr
+                });
+                
+            if(-1 === href.indexOf('?')){
+                href = href + '?';
+            }
+            
+            href = href + params;
+            
+            j_link.attr('href', href);
+        }
+        
         console && console.log('done_addressing');
     }
     
@@ -231,10 +272,14 @@
         j_lng = j_bar.find('.lng');
         
         if(params.form){
-            j_form = params.form,
-            j_flat = j_form.find('[name=latitude]'),
-            j_flng = j_form.find('[name=longitude]'),
+            j_form = params.form;
+            j_flat = j_form.find('[name=latitude]');
+            j_flng = j_form.find('[name=longitude]');
             j_faddr = j_form.find('[name=address]');
+        }
+        
+        if(params.link){
+            j_link = params.link;
         }
             
         j_bar.bind('init_latlng', init_latlng).
