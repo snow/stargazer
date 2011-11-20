@@ -328,9 +328,14 @@
 })(jQuery);
 
 jQuery(function($){
-    // hide address bar on android built-in browser
-    s.j_doc.scrollTop(1);
-    s.j_doc.scrollTop(0);
+    // hide address bar on mobile browser
+    $(window).load(function(){
+        setTimeout(function(){
+            // not work on android builtin browser with (0, 1) first
+            window.scrollTo(0, 1);
+            window.scrollTo(0, 0);
+        }, 100);
+    });
     
     $('form').each(function(idx, el){
         var j_form = $(el);
