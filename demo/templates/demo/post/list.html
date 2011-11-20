@@ -2,23 +2,24 @@
 
 {% block title %}Feed{% endblock %}
 {% block page_title %}Feed{% endblock %}
-{% block page_id %}post_list_{{ sorter }}{% endblock %}
+{% block page_id %}post_list_{{ params.sorter }}{% endblock %}
 
 {% block bd %}
-<div id="addrbar">
+<div id="addrbar" class="locbar">
   <span class="stat"></span>
-  <span class="addr">{{ addr }}</span>
-  <span class="lat">{{ lat }}</span>
-  <span class="lng">{{ lng }}</span>
+  <span class="addr">{{ request.GET.addr }}</span>
+  <span class="lat">{{ request.GET.lat }}</span>
+  <span class="lng">{{ request.GET.lng }}</span>
 </div>
 
-<div id="stream" class="{{ sorter }}" sorter="{{ sorter }}"/>
+<div id="stream" class="{{ params.sorter }}" sorter="{{ params.sorter }}"/>
 
 <script>
 (function($){
-    s.init_addrbar({
-        'callback': s.stream.init,
-        'link': $('#hd .post')
+    s.geo.init(function(){
+        s.j_doc.one(s.geo.E_LATLNG_DONE, function(e, lat, lng, addr){
+            s.stream.init();
+        });
     });
 })(jQuery);
 </script>

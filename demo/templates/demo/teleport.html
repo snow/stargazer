@@ -1,0 +1,57 @@
+{% extends 'demo/base.html' %}
+
+{% block title %}Teleport{% endblock %}
+{% block page_title %}Teleport{% endblock %}
+{% block page_id %}teleport{% endblock %}
+
+{% block bd %}
+<div id="addrbar" class="locbar">
+  <span class="stat"></span>
+  <span class="addr">{{ request.GET.addr }}</span>
+  <span class="lat">{{ request.GET.lat }}</span>
+  <span class="lng">{{ request.GET.lng }}</span>
+</div>
+<div class="map_container">
+    <div class="map"></div>
+    <div class="overlay"></div>
+</div>
+<a class="go loclink" href="{{ request.GET.to }}">Teleport!</a>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+<script>
+(function($){
+    var j_map_container = $('.map_container'),
+        j_map = j_map_container.find('.map'),
+        j_overlay = j_map_container.find('.overlay'),
+        gmap;
+        
+    function load_map(lat, lng, addr){
+        gmap = new google.maps.Map(j_map.get(0), {
+            zoom: 13,
+            center: new google.maps.LatLng(lat, lng),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+        
+        google.maps.event.addListener(gmap, 'dragend', function(e){
+            var center = gmap.center;
+                lat = s.geo.trunk_latlng(center.lat()),
+                lng = s.geo.trunk_latlng(center.lng());
+                
+            $.when(s.geo.latlng2addr(lat, lng)).done(function(addr){
+                s.j_doc.trigger(s.geo.E_LATLNG_DONE, [lat, lng, addr]);
+            });
+        });
+    }
+    
+    s.geo.init(function(){
+        s.j_doc.one(s.geo.E_LATLNG_DONE, function(e, lat, lng, addr){
+            load_map(lat, lng, addr);
+        });
+    });
+        
+    j_overlay.css({
+        'top': (j_map_container.height() / 2 - j_overlay.height() / 2),
+        'left': (j_map_container.width() / 2 - j_overlay.width() / 2)
+    });
+})(jQuery);
+</script>  
+{% endblock %}

@@ -5,7 +5,7 @@
 (function($){
     window.s = {}
     
-    s_doc = $(document);
+    s.j_doc = $(document);
 })(jQuery);
 
 /*
@@ -105,33 +105,39 @@
  * -----------------------------
  */
 (function($){
-    var j_bar,
-        j_stat,
-        j_addr,
-        j_lat,
-        j_lng,
-        
-        j_form,
-        j_flat,
-        j_flng,
-        j_faddr,
-        
-        j_link,
-        
-        lat,
-        lng,
-        addr,
-        
-        NO_GEO_MSG = '该设备不支持定位 /. .\\',
-        
+    var NO_GEO_MSG = '该设备不支持定位 /. .\\',
         LOCATING_MSG = '正在获取经纬度...',
         FAILED_LOCATION_MSG = '获取位置失败 /. .\\',
         ADDRESSING_MSG = '正在获取地址...',
-        FAILED_ADDRESSING_MSG = '获取地址失败 /. .\\';
+        FAILED_ADDRESSING_MSG = '获取地址失败 /. .\\',
+        
+        LATLNG_TO_ADDR_API = '/utils/latlng2addr/';
+        
+    s.geo = {};
+    
+    /*s.geo.initialized = false;
+    s.geo.lat = false;
+    s.geo.lng = false;
+    s.geo.addr = false;*/
+    
+    s.geo.E_NOT_SUPPORT = 's-geo-not_support';
+    s.geo.E_LATLNG_START = 's-geo-latlng_start';
+    s.geo.E_LATLNG_DONE = 's-geo-latlng_done';
+    s.geo.E_LATLNG_FAIL = 's-geo-latlng_fail';
+    s.geo.E_ADDR_START = 's-geo-addr_start';
+    s.geo.E_ADDR_DONE = 's-geo-addr_done';
+    s.geo.E_ADDR_FAIL = 's-geo-addr_fail';
+    
+    s.geo.def_options = {
+        'enableHighAccuracy': true,
+        'maximumAge': 0
+    }
+    
+    s.geo.j_addrbar = false;
     
     // due with lattidue and longitude that more than 7 float point
     // e.g. safari has 8        
-    function trunk_latlng(str){
+    s.geo.trunk_latlng = function(str){
         var str = str.toString(),
             pidx = str.indexOf('.');
             
@@ -140,165 +146,191 @@
         } else {
             return str.substr(0, pidx+8);    
         }
-    }    
+    }
     
-    function init_latlng(){
-        if('' !== j_lat.text() && '' !== j_lng.text()){
-            lat = trunk_latlng(j_lat.text());
-            lng = trunk_latlng(j_lng.text());
-            
-            console && console.log('latlng already initialised');
-            j_bar.trigger('done_latlng');
-            return;
-        }
-        
-        if(navigator.geolocation) {
-            j_stat.addClass('locating').text(LOCATING_MSG);
-            console && console.log('acquiring location');
+    s.geo.get_location = function(options){
+        if(navigator.geolocation) {            
+            s.j_doc.trigger(s.geo.E_LATLNG_START);
           
-            navigator.geolocation.getCurrentPosition(function(position) { 
-                j_stat.removeClass('locating').empty();
-                console && console.log('got location from browser');
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var lat = s.geo.trunk_latlng(position.coords.latitude),
+                    lng = s.geo.trunk_latlng(position.coords.longitude);
                 
-                lat = trunk_latlng(position.coords.latitude);
-                lng = trunk_latlng(position.coords.longitude);
-                
-                j_lat.text(lat);
-                j_lng.text(lng);
-                
-                if(position.address){
-                    console && console.log('got address from browser');
-                    
-                    addr = ''
-                    if(position.address.street){
-                        addr += position.address.street
+                $.when(function(){
+                    try {
+                        return position.address.street + ' ' + 
+                            position.address.streetNumber;
+                    } catch (e) {
+                        s.j_doc.trigger(s.geo.E_ADDR_START);
+                        return $.ajax(LATLNG_TO_ADDR_API, {
+                            data: {
+                                'lat': lat,
+                                'lng': lng
+                            },
+                            dataType: 'text'});
                     }
-                    if(position.address.streetNumber){
-                        addr += ' ' + position.address.streetNumber
-                    }
-                  
-                    j_addr.text(addr)
-                }
-                
-                j_bar.trigger('done_latlng');
+                }).
+                done(function(addr){
+                    s.j_doc.trigger(s.geo.E_ADDR_DONE);
+                    s.j_doc.trigger(s.geo.E_LATLNG_DONE, [lat, lng, addr]);
+                }). 
+                fail(function(){
+                    s.j_doc.trigger(s.geo.E_ADDR_FAIL);
+                });
             }, 
             function() {
-                j_stat.removeClass('locating').addClass('failed').
-                    text(FAILED_LOCATION_MSG);
+                s.j_doc.trigger(s.geo.E_LATLNG_FAIL);
             }, 
-            {
-                'enableHighAccuracy': true,
-                'maximumAge': 0,
-            });
+            $.extend({}, s.geo.def_options, options));
         } else {
-            j_stat.addClass('failed').text(NO_GEO_MSG);
+            s.j_doc.trigger(s.geo.E_NOT_SUPPORT);
         }
-    }
+    };
     
-    function after_latlng(){
-        if(j_form){
-            j_flat.val(j_lat.text());
-            j_flng.val(j_lng.text());
-        }
-        
-        console && console.log('done_latlng');
-        
-        j_bar.trigger('init_addr');
-    }
-    
-    function init_addr(){
-        if('' !== j_addr.text()){
-            addr = j_addr.text()
-            
-            console && console.log('address already initialised');
-            j_bar.trigger('done_addressing');
-            return;
-        }
-        
-        j_stat.addClass('addressing').text(ADDRESSING_MSG);
-        console && console.log('acquiring address from server');
-        $.ajax('/utils/latlng2addr', {
+    s.geo.latlng2addr = function(lat, lng, callback){
+        var settings = {
             data: {
-                'lat': j_lat.text(),
-                'lng': j_lng.text()
+                'lat': lat,
+                'lng': lng
             },
-            success: function(data){
-                j_stat.removeClass('addressing').empty();
-                j_addr.text(data);
-                j_bar.trigger('done_addressing');
-            },
-            error: function(){
-                j_stat.removeClass('addressing').addClass('failed').
-                    text(FAILED_ADDRESSING_MSG);
-            },
-            dataType: 'text'});
+            dataType: 'text'
+        }
+        
+        if('function' === typeof callback){
+            settings.success = callback;
+        }
+        
+        return $.ajax(LATLNG_TO_ADDR_API, settings);
+    };
+    
+    s.geo.update_locbar_start = function(j_locbar, message){
+        j_locbar.removeClass('done fail').addClass('ing');
+        j_locbar.find('.stat').text(LOCATING_MSG);
     }
     
-    function after_addr(){
-        if(j_form){
-            j_faddr.val(j_addr.text());
-        }
-        
-        if(j_link){
-            var href = j_link.attr('href'),
-                params = $.param({
-                    'lat': lat, 
-                    'lng': lng, 
-                    'addr': addr
-                });
-                
-            if(-1 === href.indexOf('?')){
-                href = href + '?';
-            }
-            
-            href = href + params;
-            
-            j_link.attr('href', href);
-        }
-        
-        console && console.log('done_addressing');
+    s.geo.update_locbar = function(j_locbar, lat, lng, addr){
+        j_locbar.removeClass('ing').addClass('done');
+        j_locbar.find('.lat').text(lat);
+        j_locbar.find('.lng').text(lng);
+        j_locbar.find('.addr').text(addr);
+        j_locbar.find('.stat').empty();
+    };
+    
+    s.geo.update_locbar_err = function(j_locbar, message){
+        j_locbar.removeClass('ing').addClass('fail');
+        j_locbar.find('.stat').text(message);
     }
     
-    s.init_addrbar = function(params){
-        j_bar = $('#addrbar');
-        
-        if(0 === j_bar.length){
-            return;
-        }
-        
-        j_stat = j_bar.find('.stat');
-        j_addr = j_bar.find('.addr');
-        j_lat = j_bar.find('.lat');
-        j_lng = j_bar.find('.lng');
-        
-        if(params.form){
-            j_form = params.form;
-            j_flat = j_form.find('[name=latitude]');
-            j_flng = j_form.find('[name=longitude]');
-            j_faddr = j_form.find('[name=address]');
-        }
-        
-        if(params.link){
-            j_link = params.link;
+    function update_locuri(uri, lat, lng, addr){
+        var ar = uri.split('?'),
+            path = ar[0];
+            
+        try {
+            params = $.deparam(ar[1]);
+        } catch (e) {
+            params = {};
         }
             
-        j_bar.bind('init_latlng', init_latlng).
-            bind('done_latlng', after_latlng).
-            bind('init_addr', init_addr).
-            bind('done_addressing', after_addr);
-            
-        if('function' == typeof params.callback){
-            j_bar.bind('done_addressing', params.callback);
-        }    
+        params.lat = lat;
+        params.lng = lng;
+        params.addr = addr;
         
-        j_bar.trigger('init_latlng');
+        return path + '?' + $.param(params);
     }
+    
+    s.geo.update_loclink = function(j_loclink, lat, lng, addr){
+        j_loclink.each(function(idx, el){
+            var j_t = $(el);
+            j_t.attr('href', update_locuri(j_t.attr('href'), lat, lng, addr));
+        });
+    };
+    
+    s.geo.update_locform = function(j_locform, lat, lng, addr){
+        j_locform.each(function(idx, el){
+            var j_t = $(el);
+            j_t.find('[name=lat]').val(lat);
+            j_t.find('[name=lng]').val(lng);
+            j_t.find('[name=addr]').val(addr);
+        });
+    };
+    
+    function log(e){
+        console.log(e.type);
+    }
+    
+    function init_locbar(j_locbar){
+        s.j_doc.bind(s.geo.E_LATLNG_START, function(e){
+            s.geo.update_locbar_start(j_locbar, LOCATING_MSG);
+        }).
+        bind(s.geo.E_ADDR_START, function(e){
+            s.geo.update_locbar_start(j_locbar, ADDRESSING_MSG);
+        })
+        .bind(s.geo.E_LATLNG_DONE, function(e, lat, lng, addr){
+            s.geo.update_locbar(j_locbar, lat, lng, addr)
+        }).
+        bind(s.geo.E_LATLNG_FAIL, function(e){
+            s.geo.update_locbar_err(j_locbar, FAILED_LOCATION_MSG);
+        }).
+        bind(s.geo.E_ADDR_FAIL, function(e){
+            s.geo.update_locbar_err(j_locbar, FAILED_ADDRESSING_MSG);
+        });
+    }
+    
+    function init_loclink(j_loclink){
+        s.j_doc.bind(s.geo.E_LATLNG_DONE, function(e, lat, lng, addr){
+            s.geo.update_loclink(j_loclink, lat, lng, addr)
+        });
+    }
+    
+    function init_locform(j_locform){
+        s.j_doc.bind(s.geo.E_LATLNG_DONE, function(e, lat, lng, addr){
+            s.geo.update_locform(j_locform, lat, lng, addr)
+        });
+    }
+    
+    function start(options){
+        var lat = s.geo.j_locbar.find('.lat').text().trim(),
+            lng = s.geo.j_locbar.find('.lng').text().trim(),
+            addr = s.geo.j_locbar.find('.addr').text().trim();
+            
+        if(lat && lng && addr){
+            s.j_doc.trigger(s.geo.E_LATLNG_DONE, [lat, lng, addr]);
+        } else {
+            s.geo.get_location(options);
+        }
+    }
+    
+    s.geo.init = function(callback, options){
+        s.geo.j_locbar = $('.locbar');
+        s.geo.j_loclink = $('.loclink');
+        s.geo.j_locform = $('.locform');
+            
+        console && s.j_doc.bind(s.geo.E_NOT_SUPPORT, log).
+            bind(s.geo.E_LATLNG_START, log).
+            bind(s.geo.E_LATLNG_DONE, log).
+            bind(s.geo.E_LATLNG_FAIL, log).
+            bind(s.geo.E_ADDR_START, log).
+            bind(s.geo.E_ADDR_DONE, log).
+            bind(s.geo.E_ADDR_FAIL, log);
+            
+        s.geo.j_locbar && init_locbar(s.geo.j_locbar);
+        s.geo.j_loclink && init_loclink(s.geo.j_loclink);
+        s.geo.j_locform && init_locform(s.geo.j_locform);
+            
+        if('function' === typeof callback){
+            callback();
+        } else if('object' === typeof callback){
+            options = callback;
+        }
+            
+        start(options);    
+    };
 })(jQuery);
 
 jQuery(function($){
     // hide address bar on android built-in browser
-    s_doc.scrollTop(1);
-    s_doc.scrollTop(0);
+    s.j_doc.scrollTop(1);
+    s.j_doc.scrollTop(0);
     
     $('form').each(function(idx, el){
         var j_form = $(el);

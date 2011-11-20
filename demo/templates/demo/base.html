@@ -12,6 +12,7 @@
   <link rel="stylesheet" type="text/css" href="/s/c/reset.css" />
   <link rel="stylesheet" type="text/css" href="/s/c/common.css" />
   <script type="text/javascript" src="/s/s/jquery.min.js"></script>
+  <script type="text/javascript" src="/s/s/jquery.ba-bbq.min.js"></script>
   <script type="text/javascript" src="/s/s/common.js"></script>
 </head>
 
@@ -21,7 +22,7 @@
     <div id="hd" class="layout">
       {% block logo %}<a class="logo" href="/">SGZ</a><span class="logo_lt">&lt;</span>{% endblock %}
       <span class="page_title">{% block page_title %}{% endblock %}</span>
-      <div class="btn">{% block hd_buttons %}<a class="post" href="/post/create/">+</a>{% endblock %}</div>
+      <div class="btn">{% block hd_buttons %}<a class="post loclink" href="/post/create/">+</a>{% endblock %}</div>
     </div>
     <div id="bd" class="layout">{% block bd %}{% endblock %}</div>
   </div>
