@@ -10,12 +10,12 @@
     {% csrf_token %}
     {{ form.as_p }}
 </form>
-<div id="addrbar">
+<div id="addrbar" class="locbar">
     <span class="stat"></span>
-    <span class="addr">{{ addr }}</span>
-    <span class="lat">{{ lat }}</span>
-    <span class="lng">{{ lng }}</span>
-    <a class="teleport" href="javascript:void(0)">[传送门]</a>
+    <span class="addr">{{ request.GET.addr }}</span>
+    <span class="lat">{{ request.GET.lat }}</span>
+    <span class="lng">{{ request.GET.lng }}</span>
+    <a class="teleport loclink" href="/teleport/?to={{ request.get_full_path }}">[传送门]</a>
 </div>
 <script>
 (function($){
@@ -23,19 +23,16 @@
         j_submit = $('#hd .submit'),
         j_txt = j_form.find('textarea');
         
-    j_submit.addClass('off');
+    j_submit.addClass('off');  
     
-    s.init_addrbar({
-        'form': j_form, 
-        'callback': function(e){
+    s.geo.init(function(){
+        s.j_doc.one(s.geo.E_LATLNG_DONE, function(e, lat, lng, addr){
             j_submit.removeClass('off').
                 click(function(){
                     j_form.submit()
                 });
-        }}
-    );
-    
-    j_txt.width(j_form.width()-10);
+        }); 
+    }); 
     
     if(j_form.hasClass('new')){
         j_txt.one('focus', function(){

@@ -22,10 +22,10 @@ form {padding:8px}
         form .li.off input,
         form .li.off textarea {color:#999}
 
-  
-#addrbar .lat,
-#addrbar .lng {display:none}
-#addrbar .teleport {float:right; text-decoration:none}
+.locbar {height:24px; line-height:24px}  
+.locbar .lat,
+.locbar .lng {display:none}
+.locbar .teleport {float:right; text-decoration:none}
 
 .sorter {position:relative; text-align:center}  
     .sorter .l {position:absolute; left:0}
@@ -58,8 +58,6 @@ form {padding:8px}
       background:#eee url(/s/i/sound.png) no-repeat 8px center}
       #stream .li .soundplayer .play {margin-left:5px; color:#333; text-decoration:none}
     
-    
-    
 /*
  * page specifics
  * ----------------
@@ -71,3 +69,8 @@ form {padding:8px}
 #post_form {text-align:center;padding:5px}
 #post_form label {display:none}
 #post_form.new textarea {color:#999}
+
+#teleport .map_container {position:relative; height:480px}
+#teleport .map {background:#eee; height:100%}
+#teleport .overlay {position:absolute; top:50%; left:50%; width:16px; height:16px; background:url(/s/i/cross-16.png)}  
+#teleport .go {display:block; height:36px; line-height:36px; font-size:large; text-align:center; background:#ddd}

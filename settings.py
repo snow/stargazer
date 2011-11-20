@@ -7,6 +7,16 @@ TEMPLATE_DEBUG = DEBUG
 _PROJECT_ROOT = dirname(abspath(__file__))
 AUTH_PROFILE_MODULE = 'core.UserProfile'
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.contrib.messages.context_processors.messages"
+)
+
 ADMINS = (
     ('snowhs', 'snow@firebloom.cc'),
 )

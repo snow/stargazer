@@ -44,20 +44,9 @@ class CreatePostView(CreateView):
     template_name = 'demo/post/create.html'
     
     user = False
-        
-    def get(self, request, *args, **kwargs):
-        self.object = None
-        
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        
-        return self.render_to_response(
-                   self.get_context_data(form=form,
-                                         lat=request.GET.get('lat', ''),
-                                         lng=request.GET.get('lng', ''),
-                                         addr=request.GET.get('addr', '')))
     
     def post(self, request, *args, **kwargs):
+        # for passing user to form_valid
         self.user = request.user
         return super(CreateView, self).post(request, *args, **kwargs)
     
@@ -82,21 +71,10 @@ class CreatePostView(CreateView):
 class PostListContainerView(TemplateView):
     template_name = 'demo/post/list.html'
     
-    def get_context_data(self, **kwargs):
-        return kwargs
-    
-    def dispatch(self, request, *args, **kwargs):
-        kwargs['lat'] = request.GET.get('lat', '')
-        kwargs['lng'] = request.GET.get('lng', '')
-        kwargs['addr'] = request.GET.get('addr', '')
-        
-        return super(PostListContainerView, self).dispatch(request, *args, 
-                                                           **kwargs)
-    
 class RecentPostListView(ListView):
     template_name = 'demo/post/list_content.html'
     
-    def dispatch(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         self.lat = float(request.GET['lat'])
         self.lng = float(request.GET['lng'])
         
@@ -106,7 +84,7 @@ class RecentPostListView(ListView):
         else:
             self.queryset = Post.recent.nearby(self.lat, self.lng).all()
         
-        return super(RecentPostListView, self).dispatch(request, *args, 
+        return super(RecentPostListView, self).get(request, *args, 
                                                         **kwargs)
         
 class LikePostView(View):
@@ -183,10 +161,8 @@ class SignupView(FormView):
 class MeView(TemplateView):
     template_name = 'demo/me.html'
     
-    def dispatch(self, request, *args, **kwargs):
-        kwargs['user'] = request.user
-        
-        return super(MeView, self).dispatch(request, *args, **kwargs)
+class TeleportView(TemplateView):
+    template_name = 'demo/teleport.html'
     
 class LatLng2AddrView(View):
     API_URI = 'http://maps.googleapis.com/maps/api/geocode/json'
@@ -230,7 +206,7 @@ class LatLng2AddrView(View):
             if 'sublocality' in com['types']:
                 break
         
-        return address
+        return address.strip()
     
     def get(self, request, *args, **kwargs):
         return HttpResponse(
