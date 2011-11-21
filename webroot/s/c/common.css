@@ -1,7 +1,7 @@
 @CHARSET "UTF-8";
 .c {clear:both}
 
-.page {position:relative; width:100%; min-height:640px; width:320px}
+.page {position:relative; width:100%; height:640px}
 
 #hd.layout {height:44px; line-height:44px; border-bottom:1px solid #111;
     background:#333}
@@ -73,7 +73,7 @@ form {padding:8px}
 #post_form label {display:none}
 #post_form.new textarea {color:#999}
 
-#teleport .map_container {position:relative; height:480px}
+#teleport .map_container {position:relative; height:350px}
 #teleport .map {background:#eee; height:100%}
 #teleport .overlay {position:absolute; top:50%; left:50%; width:16px; height:16px; background:url(/s/i/cross-16.png)}  
 #teleport .go {display:block; height:36px; line-height:36px; font-size:large; text-align:center; background:#ddd}
