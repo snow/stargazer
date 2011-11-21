@@ -16,22 +16,12 @@
     
     s.stream = {}
     
-    var j_lat,
-        j_lng,
-        j_stream,
-        sorter,
-        CONTENT_URI = '/post/load/'+sorter+'/',
+    var j_stream,
         csrf;
     
-    s.stream.init = function(){
+    s.stream.init = function(type, params){
         csrf = $('[name=csrfmiddlewaretoken]').val();
-        j_bar = $('#addrbar');
-        j_lat = j_bar.find('.lat');
-        j_lng = j_bar.find('.lng');
         j_stream = $('#stream');
-        sorter = j_stream.attr('sorter');
-        
-        CONTENT_URI = '/post/load/'+sorter+'/';
         
         j_stream.delegate('.stream-item .ban', 'click', function() {
             s.stream.ban(this);
@@ -39,16 +29,19 @@
             s.stream.like(this);
         });
         
-        s.stream.load();
+        var uri = '/post/load/'+type+'/';
+        if(params.id){
+            uri += params.id + '/';
+            delete params.id
+        }
+        
+        s.stream.load(uri, params);
     };
     
-    s.stream.load = function(content_uri){
+    s.stream.load = function(CONTENT_URI, params){
         $.ajax(CONTENT_URI, {
             'type': 'GET',
-            'data': {
-                'lat': j_lat.text(),
-                'lng': j_lng.text()
-            },
+            'data': params,
             'success': function(data){
                 j_stream.append(data);
             }

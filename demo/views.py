@@ -4,7 +4,7 @@ import json
 import logging
 
 from django.views.generic import View, TemplateView, CreateView, ListView, \
-                                 FormView
+                                 FormView, DetailView, RedirectView
 from django.http import HttpResponse, HttpResponseRedirect
 from django.forms import ModelForm, Textarea, HiddenInput
 from django.shortcuts import render_to_response
@@ -75,17 +75,23 @@ class RecentPostListView(ListView):
     template_name = 'demo/post/list_content.html'
     
     def get(self, request, *args, **kwargs):
-        self.lat = float(request.GET['lat'])
-        self.lng = float(request.GET['lng'])
+        mgr = Post.objects.nearby(float(request.GET['lat']), 
+                                  float(request.GET['lng'])).recent()
         
-        if request.user.is_authenticated():        
-            self.queryset = Post.recent.with_user(request.user).\
-                nearby(self.lat, self.lng).all()
-        else:
-            self.queryset = Post.recent.nearby(self.lat, self.lng).all()
+        if request.user.is_authenticated():     
+            mgr.with_user(request.user)
+            
+        self.queryset = mgr.all()
         
-        return super(RecentPostListView, self).get(request, *args, 
-                                                        **kwargs)
+        return super(RecentPostListView, self).get(request, *args, **kwargs)
+    
+class UserPostListView(ListView):
+    template_name = 'demo/post/list_content_simple.html'
+    
+    def get(self, request, *args, **kwargs):
+        self.queryset = Post.objects.by_user(kwargs['id']).recent().all()
+        
+        return super(UserPostListView, self).get(request, *args, **kwargs)    
         
 class LikePostView(View):
     '''TODO'''
@@ -158,8 +164,18 @@ class SignupView(FormView):
         else:
             return self.form_invalid(form)
 
-class MeView(TemplateView):
-    template_name = 'demo/me.html'
+class MeView(RedirectView):
+    permanent = False
+    query_string = True
+    
+    def get(self, request, *args, **kwargs):
+        self.url = '/user/{}/'.format(request.user.id)
+        
+        return super(MeView, self).get(request, *args, **kwargs)
+
+class UserProfileView(DetailView):
+    model = User
+    template_name = 'demo/user_profile.html'
     
 class TeleportView(TemplateView):
     template_name = 'demo/teleport.html'

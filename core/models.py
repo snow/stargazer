@@ -54,35 +54,56 @@ class Author(models.Model):
     
     def gavatar_uri(self):
         return _get_gavatar_uri(self.owner.email)
-
-class PostGeoManagerMixin(models.Manager):
+          
+            
+class PostManager(models.Manager):
+    _queryset = None
+    
+    def get_query_set(self):
+        if None is self._queryset:
+            self._queryset = super(PostManager, self).get_query_set()
+            
+        return self._queryset
+    
+    def update_query_set(self, queryset):
+        self._queryset = queryset
+    
+    def recent(self):
+        self.update_query_set(self.get_query_set().order_by('-created'))
+            
+        return self
+    
+    def with_user(self, user):
+        self.model.current_user = user
+        self.update_query_set(
+            self.get_query_set().exclude(bans=self.model.current_user))    
+            
+        return self
+    
+    def by_user(self, user):
+        if type(user) is str:
+            user = int(user)
+        
+        if type(user) is int:
+            user = User.objects.get(pk=user)
+        
+        self.update_query_set(
+            self.get_query_set().filter(author__owner=user))    
+            
+        return self
+    
     def nearby(self, lat, lng, range=2000):
         lat_offset = geo.get_lat_offset_by_distance(range)
         lng_offset = geo.get_lng_offset_by_distance(range, lat)
         
-        return self.get_query_set().\
-                filter(latitude__gte=lat-lat_offset).\
-                filter(latitude__lte=lat+lat_offset).\
-                filter(longitude__gte=lng-lng_offset).\
-                filter(longitude__lte=lng+lng_offset)
-                
-class UserManagerMixin(models.Manager):
-    def with_user(self, user):
-        self.model.current_user = user
+        self.update_query_set(
+            self.get_query_set().filter(latitude__gte=lat-lat_offset).
+                                filter(latitude__lte=lat+lat_offset).
+                                filter(longitude__gte=lng-lng_offset).
+                                filter(longitude__lte=lng+lng_offset))
         return self
     
-    def get_query_set(self):
-        if self.model.current_user:
-            return super(UserManagerMixin, self).get_query_set().\
-                exclude(bans=self.model.current_user)
-        else:
-            return super(UserManagerMixin, self).get_query_set()
-        
-
-class PostRecentManager(UserManagerMixin, PostGeoManagerMixin):
-    def get_query_set(self):
-        return super(PostRecentManager, self).get_query_set().\
-            order_by('-created')
+    
     
 class Post(models.Model):
     '''A post'''
@@ -106,11 +127,10 @@ class Post(models.Model):
     likes = models.ManyToManyField(User, related_name='likes')
     bans = models.ManyToManyField(User, related_name='bans')
     
-    objects = models.Manager()
-    recent = PostRecentManager()
+    objects = PostManager()
     
     current_user = False
         
     def is_liked(self):
         return Post.current_user and \
-            self.likes.filter(id=Post.current_user.id).count()
+            self.likes.filter(id=Post.current_user.id).exists()
