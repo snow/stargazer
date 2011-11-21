@@ -24,7 +24,7 @@
         j_map = j_map_container.find('.map'),
         j_overlay = j_map_container.find('.overlay'),
         gmap;
-        
+
     function load_map(lat, lng, addr){
         gmap = new google.maps.Map(j_map.get(0), {
             zoom: 13,
@@ -33,21 +33,22 @@
             disableDefaultUI: true,
             zoomControl: true,
             zoomControlOptions: {
-                position: google.maps.ControlPosition.LEFT_BOTTOM
+                position: google.maps.ControlPosition.LEFT_BOTTOM,
+                style: google.maps.ZoomControlStyle.SMALL
             }
         });
-        
+
         google.maps.event.addListener(gmap, 'dragend', function(e){
             var center = gmap.center;
                 lat = s.geo.trunk_latlng(center.lat()),
                 lng = s.geo.trunk_latlng(center.lng());
-                
+
             $.when(s.geo.latlng2addr(lat, lng)).done(function(addr){
                 s.j_doc.trigger(s.geo.E_LATLNG_DONE, [lat, lng, addr]);
             });
         });
     }
-    
+
     var height;
     if(-1 < navigator.userAgent.indexOf('Android')){
         height = screen.availHeight - 50;
@@ -56,20 +57,23 @@
     } else {
         height = screen.availHeight - 200;
     }
-    
+
     j_map_container.height(height);
     j_overlay.css({
         'top': (j_map_container.height() / 2 - j_overlay.height() / 2),
         'left': (j_map_container.width() / 2 - j_overlay.width() / 2)
     });
-    
+
     s.geo.init(function(){
         s.j_doc.one(s.geo.E_LATLNG_DONE, function(e, lat, lng, addr){
             load_map(lat, lng, addr);
         });
+    },
+    {
+        'enableHighAccuracy': false,
+        'maximumAge': 99999
     });
-        
-    
+
 })(jQuery);
-</script>  
+</script>
 {% endblock %}
