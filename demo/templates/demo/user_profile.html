@@ -1,0 +1,25 @@
+{% extends 'demo/base.html' %}
+
+{% block title %}{{ object.username }}{% endblock %}
+{% block page_title %}{{ object.username }}{% endblock %}
+{% block page_id %}user_profile{% endblock %}
+
+{% block bd %}
+<div class="info">
+    <img class="avatar" src="{{ object.get_profile.gavatar_uri }}" alt="" />
+    <div class="username">{{ object.username }}</div>
+    <div class="c"></div>
+</div>
+
+<div id="stream" class="by_user"></div>
+<script>
+(function($){
+    s.stream.init('by_user', {
+        'id': '{{ object.id }}'
+    });
+})(jQuery);
+</script>
+    {% if request.user.id == object.id %}
+<a href="/accounts/logout/">logout</a>
+    {% endif %}
+{% endblock %}

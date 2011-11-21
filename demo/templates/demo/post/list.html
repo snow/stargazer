@@ -12,13 +12,18 @@
   <span class="lng">{{ request.GET.lng }}</span>
 </div>
 
-<div id="stream" class="{{ params.sorter }}" sorter="{{ params.sorter }}"/>
+<div id="stream" class="{{ params.type }}"/>
 
 <script>
 (function($){
     s.geo.init(function(){
         s.j_doc.one(s.geo.E_LATLNG_DONE, function(e, lat, lng, addr){
-            s.stream.init();
+            var j_bar = $('#addrbar');
+
+            s.stream.init('{{ params.type }}', {
+                'lat': j_bar.find('.lat').text(),
+                'lng': j_bar.find('.lng').text()
+            });
         });
     });
 })(jQuery);
