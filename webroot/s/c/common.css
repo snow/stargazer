@@ -38,6 +38,7 @@ form {padding:8px}
     #stream .li .avatar {position:absolute; top:0; left:0}
 
     #stream .li .username {margin-bottom:5px; height:30px; line-height:30px; font-weight:bold}
+        #stream .li .username a {color:#000; text-decoration:none}
 
     #stream .li .like,
     #stream .li .ban {display:block; float:right; padding:0 10px 0 33px;
