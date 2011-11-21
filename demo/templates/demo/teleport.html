@@ -3,6 +3,7 @@
 {% block title %}Teleport{% endblock %}
 {% block page_title %}Teleport{% endblock %}
 {% block page_id %}teleport{% endblock %}
+{% block hd_buttons %}{% endblock %}
 
 {% block bd %}
 <div id="addrbar" class="locbar">
@@ -28,7 +29,12 @@
         gmap = new google.maps.Map(j_map.get(0), {
             zoom: 13,
             center: new google.maps.LatLng(lat, lng),
-            mapTypeId: google.maps.MapTypeId.ROADMAP
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            disableDefaultUI: true,
+            zoomControl: true,
+            zoomControlOptions: {
+                position: google.maps.ControlPosition.LEFT_BOTTOM
+            }
         });
         
         google.maps.event.addListener(gmap, 'dragend', function(e){
@@ -42,16 +48,28 @@
         });
     }
     
+    var height;
+    if(-1 < navigator.userAgent.indexOf('Android')){
+        height = screen.availHeight - 50;
+    } else if(-1 < navigator.userAgent.indexOf('iPhone')){
+        height = screen.availHeight - 150;
+    } else {
+        height = screen.availHeight - 200;
+    }
+    
+    j_map_container.height(height);
+    j_overlay.css({
+        'top': (j_map_container.height() / 2 - j_overlay.height() / 2),
+        'left': (j_map_container.width() / 2 - j_overlay.width() / 2)
+    });
+    
     s.geo.init(function(){
         s.j_doc.one(s.geo.E_LATLNG_DONE, function(e, lat, lng, addr){
             load_map(lat, lng, addr);
         });
     });
         
-    j_overlay.css({
-        'top': (j_map_container.height() / 2 - j_overlay.height() / 2),
-        'left': (j_map_container.width() / 2 - j_overlay.width() / 2)
-    });
+    
 })(jQuery);
 </script>  
 {% endblock %}
