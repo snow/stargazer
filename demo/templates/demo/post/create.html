@@ -6,7 +6,7 @@
 {% block hd_buttons %}<a class="submit" href="javascript:void(0)">发表</a>{% endblock %}
 
 {% block bd %}
-<form id="post_form" action="" class="{% if not form.is_bound %}new{% endif %}" method="post">
+<form id="post_form" action="" class="locform{% if not form.is_bound %} new{% endif %}" method="post">
     {% csrf_token %}
     {{ form.as_p }}
 </form>
