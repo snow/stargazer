@@ -76,8 +76,7 @@
             cur_like_cnt = 0;
         }
 
-        return $.ajax('/post/like/',{
-            'type': 'POST',
+        return n.ajax('/post/like/', {
             'data':{'id':id, 'csrfmiddlewaretoken': csrf},
             'success': function(data){
                 if(j_stream_item.hasClass('on')) {
@@ -238,9 +237,9 @@
     s.geo.update_locform = function(j_locform, lat, lng, addr){
         j_locform.each(function(idx, el){
             var j_t = $(el);
-            j_t.find('[name=lat]').val(lat);
-            j_t.find('[name=lng]').val(lng);
-            j_t.find('[name=addr]').val(addr);
+            j_t.find('[name=latitude]').val(lat);
+            j_t.find('[name=longitude]').val(lng);
+            j_t.find('[name=address]').val(addr);
         });
     };
 
