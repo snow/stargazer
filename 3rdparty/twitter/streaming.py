@@ -115,4 +115,4 @@ if options.debug:
 auth = BasicAuthHandler(settings.TWITTER_ACCOUNT, settings.TWITTER_PASSWORD)
 listener = SgzStreamListener()
 stream = Stream(auth, listener)
-stream.filter(locations=(30.7882, 104.2097, 30.5620, 103.9278))
+stream.filter(locations=(103.9278, 30.5620, 104.2097, 30.7882))
