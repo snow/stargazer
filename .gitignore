@@ -7,3 +7,4 @@
 .pydevproject
 # db
 sqlite3.db
+data.txt
