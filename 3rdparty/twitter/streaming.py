@@ -13,7 +13,7 @@ PROJ_DIR = PROJ_PATH.split('/')[-1]
 sys.path.append(PROJ_CONTAINER)
 sys.path.append(PROJ_CONTAINER+'/'+PROJ_DIR)
 
-os.environ['DJANGO_SETTINGS_MODULE'] ='stargazer.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = PROJ_DIR + '.settings'
 from django.core.management import setup_environ
 from stargazer import settings
 
