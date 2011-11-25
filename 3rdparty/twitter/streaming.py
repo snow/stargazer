@@ -3,7 +3,7 @@
 import sys, os
 from os.path import dirname, abspath
 
-from tweepy import StreamListener, Stream
+from tweepy import StreamListener, Stream, BasicAuthHandler
 
 # settup environment
 PROJ_PATH = dirname(dirname(dirname(abspath(__file__))))
