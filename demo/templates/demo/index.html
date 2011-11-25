@@ -1,0 +1,28 @@
+{% extends 'demo/base.html' %}
+
+{% block logo %}{% endblock %}
+{% block page_title %}Stargazer{% endblock %}
+{% block page_id %}index{% endblock %}
+
+{% block bd %}
+<a class="li" href="/post/recent/">
+  <img src="/s/i/ex/icon-globe-64.jpg" alt="icon of Nearby" />
+  <span class="label">附近</span>
+</a>
+<a class="li" href="/teleport/?to=/post/recent/">
+  <img src="/s/i/ex/icon-globe-64.jpg" alt="icon of Teleport" />
+  <span class="label">传送门</span>
+</a>
+<!--<a class="li" href="/fav/">
+  <img src="/s/i/ex/icon-globe-64.jpg" alt="icon of Favorites" />
+  <span class="label">收藏</span>
+</a>
+<a class="li" href="/channel/">
+  <img src="/s/i/ex/icon-globe-64.jpg" alt="icon of Channel" />
+  <span class="label">频道</span>
+</a>-->
+<a class="li" href="/me/">
+  <img src="/s/i/ex/icon-globe-64.jpg" alt="icon of Me" />
+  <span class="label">我</span>
+</a>
+{% endblock %}

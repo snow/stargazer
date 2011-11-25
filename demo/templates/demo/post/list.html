@@ -1,0 +1,31 @@
+{% extends 'demo/base.html' %}
+
+{% block title %}Feed{% endblock %}
+{% block page_title %}Feed{% endblock %}
+{% block page_id %}post_list_{{ params.sorter }}{% endblock %}
+
+{% block bd %}
+<div id="addrbar" class="locbar">
+  <span class="stat"></span>
+  <span class="addr">{{ request.GET.addr }}</span>
+  <span class="lat">{{ request.GET.lat }}</span>
+  <span class="lng">{{ request.GET.lng }}</span>
+</div>
+
+<div id="stream" class="{{ params.type }}"/>
+
+<script>
+(function($){
+    s.geo.init(function(){
+        s.j_doc.one(s.geo.E_LATLNG_DONE, function(e, lat, lng, addr){
+            var j_bar = $('#addrbar');
+
+            s.stream.init('{{ params.type }}', {
+                'lat': j_bar.find('.lat').text(),
+                'lng': j_bar.find('.lng').text()
+            });
+        });
+    });
+})(jQuery);
+</script>
+{% endblock %}

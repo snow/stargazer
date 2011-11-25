@@ -1,0 +1,46 @@
+{% extends 'demo/base.html' %}
+
+{% block title %}发帖{% endblock %}
+{% block page_title %}发帖{% endblock %}
+{% block page_id %}post_create{% endblock %}
+{% block hd_buttons %}<a class="submit" href="javascript:void(0)">发表</a>{% endblock %}
+
+{% block bd %}
+<form id="post_form" action="" class="locform{% if not form.is_bound %} new{% endif %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+</form>
+<div id="addrbar" class="locbar">
+    <span class="stat"></span>
+    <span class="addr">{{ request.GET.addr }}</span>
+    <span class="lat">{{ request.GET.lat }}</span>
+    <span class="lng">{{ request.GET.lng }}</span>
+    <a class="teleport loclink" href="/teleport/?to={{ request.get_full_path }}">[传送门]</a>
+</div>
+<script>
+(function($){
+    var j_form = $('#post_form'),
+        j_submit = $('#hd .submit'),
+        j_txt = j_form.find('textarea');
+        
+    j_submit.addClass('off');  
+    
+    s.geo.init(function(){
+        s.j_doc.one(s.geo.E_LATLNG_DONE, function(e, lat, lng, addr){
+            j_submit.removeClass('off').
+                click(function(){
+                    j_form.submit()
+                });
+        }); 
+    }); 
+    
+    if(j_form.hasClass('new')){
+        j_txt.one('focus', function(){
+            j_txt.empty()
+            j_form.removeClass('new');
+        });
+    }
+})(jQuery);
+</script>
+{% endblock %}
+
