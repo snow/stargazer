@@ -32,6 +32,7 @@ class SgzStreamListener(StreamListener):
     def on_data(self, data):
         '''TODO'''
         _datafile.write(data)
+        _datafile.flush()
         return super(SgzStreamListener, self).on_data(data)
 
     def on_status(self, status):
@@ -49,6 +50,23 @@ class SgzStreamListener(StreamListener):
         return
 
 # some latlng
+# center china
+# W 97.00022506644018
+# S 20.54311479591141
+# E 123.01585006644018
+# N 42.805728711206335
+
+# west china
+# N 49.43442204194387
+# E 97.00022506644018
+# S 26.660039107788435
+# W 72.74241256644018
+
+# ne china
+# N 53.89968583646365
+# E 135.49631881644018
+# S 38.54198948702897
+# W 115.01780319144018
 
 # 成都绕城
 # NORTH = 30.78815194486169
@@ -115,4 +133,7 @@ if options.debug:
 auth = BasicAuthHandler(settings.TWITTER_ACCOUNT, settings.TWITTER_PASSWORD)
 listener = SgzStreamListener()
 stream = Stream(auth, listener)
-stream.filter(locations=(103.9278, 30.5620, 104.2097, 30.7882))
+#stream.filter(locations=(103.9278, 30.5620, 104.2097, 30.7882))
+stream.filter(locations=(97.0002, 42.8057, 20.5431, 123.0159, # center
+                         72.7424, 49.4344, 26.6600, 97.0002,  # west
+                         115.0178, 53.8997, 38.5420, 135.4963)) # ne
