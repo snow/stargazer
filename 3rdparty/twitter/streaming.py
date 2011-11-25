@@ -2,7 +2,9 @@
 # -*- coding: UTF-8 -*-
 import sys, os
 from os.path import dirname, abspath
+from optparse import OptionParser
 
+import tweepy
 from tweepy import StreamListener, Stream, BasicAuthHandler
 
 # settup environment
@@ -100,6 +102,15 @@ class SgzStreamListener(StreamListener):
 # let's jean!
 # -------------
 #
+opt = OptionParser(usage='tweepyshell [options] <username> <password>')
+opt.add_option('-d', '--debug',
+        action='store_true',
+        dest='debug',
+        help='enable debug mode')
+options, args = opt.parse_args()
+
+if options.debug:
+    tweepy.debug()
 
 auth = BasicAuthHandler(settings.TWITTER_ACCOUNT, settings.TWITTER_PASSWORD)
 listener = SgzStreamListener()
