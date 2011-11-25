@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,
+                                 minimum-scale=1.0, maximum-scale=1.0, 
+                                 user-scalable=no" />
+  <meta name="format-detection" content="telephone=no"/>
+  <meta name="format-detection" content="address=no"/>
+  <meta name="language" content="zh_cn" />
+  <title>{% block title %}Stargazer{% endblock %}</title>
+
+  <link rel="stylesheet" type="text/css" href="/s/c/reset.css?r=1.0.1" />
+  <link rel="stylesheet" type="text/css" href="/s/c/common.css?r=0.1.1" />
+  <script type="text/javascript" src="/s/s/jquery.min.js?r=1.6.2"></script>
+  <script type="text/javascript" src="/s/s/jquery.ba-bbq.min.js?r=1.2.1"></script>
+  <script type="text/javascript" src="/s/s/common.js?r=0.1.1"></script>
+</head>
+
+<body>
+  <div id="{% block page_id %}{% endblock %}" class="page">
+    {% csrf_token %}
+    <div id="hd" class="layout">
+      {% block logo %}<a class="logo" href="/">SGZ</a><span class="logo_lt">&lt;</span>{% endblock %}
+      <span class="page_title">{% block page_title %}{% endblock %}</span>
+      <div class="btn">{% block hd_buttons %}<a class="post loclink" href="/post/create/">+</a>{% endblock %}</div>
+    </div>
+    <div id="bd" class="layout">{% block bd %}{% endblock %}</div>
+  </div>
+</body>
+</html>
