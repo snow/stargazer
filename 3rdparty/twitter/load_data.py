@@ -25,6 +25,7 @@ if '__main__' == __name__:
                 post.address = latlng2addr.get(post.latitude, post.longitude)
             except LatLng2Addr.BaseException as e:
                 print e
+                print post.latitude, post.longitude
             else:
                 print post.address
                 post.save()
