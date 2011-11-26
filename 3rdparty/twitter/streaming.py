@@ -1,28 +1,24 @@
 #! /usr/bin/env python
 # -*- coding: UTF-8 -*-
-import sys, os
+import os
 from os.path import dirname, abspath
 from optparse import OptionParser
+import re
+import json
+from datetime import timedelta
 
+from django.core.mail import mail_admins
 import tweepy
 from tweepy import StreamListener, Stream, BasicAuthHandler
+from tweepy.models import Status
+from pyrcp.django.cli import setup_env
 
-# settup environment
-PROJ_PATH = dirname(dirname(dirname(abspath(__file__))))
-PROJ_CONTAINER = dirname(PROJ_PATH)
-PROJ_DIR = PROJ_PATH.split('/')[-1]
+settings = setup_env(__file__)
 
-sys.path.append(PROJ_CONTAINER)
-sys.path.append(PROJ_CONTAINER+'/'+PROJ_DIR)
+from core.models import Author, Post
+from core.utils import LatLng2Addr
 
-os.environ['DJANGO_SETTINGS_MODULE'] = PROJ_DIR + '.settings'
-from django.core.management import setup_environ
-from stargazer import settings
-
-setup_environ(settings)
-
-# models
-from stargazer.core.models import Post
+PID_PATH = '{}/streaming.pid'.format(dirname(abspath(__file__)))
 
 _datafile = open(dirname(abspath(__file__)) + '/data.txt', 'a')
 
@@ -31,23 +27,99 @@ class SgzStreamListener(StreamListener):
 
     def on_data(self, data):
         '''TODO'''
-        _datafile.write(data)
-        _datafile.flush()
-        return super(SgzStreamListener, self).on_data(data)
-
-    def on_status(self, status):
+        _datafile.write(data+'\n')
+        
+        if 'in_reply_to_status_id' in data:
+            if self.on_status(data) is False:
+                return False
+        else:
+            return super(SgzStreamListener, self).on_data(data)
+        
+    def on_status(self, data):
         '''TODO'''
-#        print status
-#        print 'user: ', status.from_user
-#        try:
-#            print 'geo : ', status.geo
-#            print 'loc : ', status.location
-#        except:
-#            pass
-#        print 'txt : ', status.text
-#        print '-' * 5
-        print 'got one'
+        return self.save_status(data)     
+        
+    def save_status(self, data):
+        '''TODO'''        
+        status = Status.parse(self.api, json.loads(data))
+        
+        if not status.geo:
+            return
+        
+        try:
+            author = Author.objects.\
+                        filter(source=Author.T_TWITTER, 
+                               external_id=status.user.id_str).get()
+        except Author.DoesNotExist:
+            author = Author(name=status.user.screen_name,
+                            avatar_uri=status.user.profile_image_url,
+                            source=Author.T_TWITTER,
+                            external_id=status.user.id_str)
+            author.save()
+                                
+        try:
+            post = Post.objects.\
+                    filter(source=Post.T_TWITTER, 
+                           external_id=status.id_str).get()
+        except Post.DoesNotExist:
+            lat = float(status.geo['coordinates'][0])
+            lng = float(status.geo['coordinates'][1])
+            try:
+                addr = latlng2addr.get(lat, lng)
+            except:
+                addr = ''
+                
+            # twitter api response in UTC
+            created = status.created_at + timedelta(hours=8)    
+            
+            post = Post(content=status.text,
+                        author=author,
+                        latitude=lat,
+                        longitude=lng,
+                        address=addr,
+                        source=Post.T_TWITTER,
+                        external_id=status.id_str,
+                        external_data=data,
+                        created=created)
+            post.save()
+            
         return
+
+#
+# let's jean!
+# -------------
+#
+if '__main__' == __name__:
+    opt = OptionParser(usage='tweepyshell [options] <username> <password>')
+    opt.add_option('-d', '--debug',
+            action='store_true',
+            dest='debug',
+            help='enable debug mode')
+    options, args = opt.parse_args()
+    
+    if options.debug:
+        tweepy.debug()
+        
+    try:
+        pid_file = open(PID_PATH, 'w')
+        pid_file.write(str(os.getpid()))
+        pid_file.flush()
+        
+        auth = BasicAuthHandler(settings.TWITTER_ACCOUNT, 
+                                settings.TWITTER_PASSWORD)
+        listener = SgzStreamListener()
+        stream = Stream(auth, listener)
+        stream.filter(locations=(103.9278, 30.5620, 104.2097, 30.7882))
+#        stream.filter(locations=(97.00, 20.54, 123.02, 42.80, # center
+#                                 72.74, 26.66, 97.00, 49.43,  # west
+#                                 115.02, 38.54, 135.50, 53.90)) # ne
+        
+    except:
+        mail_admins('Streaming process dead', sys.exc_info()[0])
+        raise    
+    finally:
+        pid_file.close()
+        os.remove(PID_PATH)
 
 # some latlng
 # center china
@@ -115,25 +187,3 @@ class SgzStreamListener(StreamListener):
 # EAST = 113.78733444144018
 # SOUTH = 34.6346203413782
 # WEST = 113.52572250296362
-
-#
-# let's jean!
-# -------------
-#
-opt = OptionParser(usage='tweepyshell [options] <username> <password>')
-opt.add_option('-d', '--debug',
-        action='store_true',
-        dest='debug',
-        help='enable debug mode')
-options, args = opt.parse_args()
-
-if options.debug:
-    tweepy.debug()
-
-auth = BasicAuthHandler(settings.TWITTER_ACCOUNT, settings.TWITTER_PASSWORD)
-listener = SgzStreamListener()
-stream = Stream(auth, listener)
-#stream.filter(locations=(103.9278, 30.5620, 104.2097, 30.7882))
-stream.filter(locations=(97.0002, 42.8057, 20.5431, 123.0159, # center
-                         72.7424, 49.4344, 26.6600, 97.0002,  # west
-                         115.0178, 53.8997, 38.5420, 135.4963)) # ne

@@ -22,53 +22,69 @@ l = logging.getLogger(__name__)
 #    owner = models.ForeignKey(User, null=True, blank=True, default=None)
 #    token = models.CharField(max_length=255, blank=True)
 def _get_gavatar_uri(email):
+    '''TODO'''
     return 'http://www.gravatar.com/avatar/{}?s=48&d=monsterid'.\
             format(hashlib.md5(email.strip().lower()).hexdigest())
 
 class UserProfile(models.Model):
+    '''TODO'''
     user = models.ForeignKey(User, unique=True)
 
     def gavatar_uri(self):
+        '''TODO'''
         return _get_gavatar_uri(self.user.email)
 
 class Author(models.Model):
+    '''TODO'''
     T_LOCAL = 0
     T_TWITTER = 1
     T_FLICKER = 2
 
-    TYPES = ((T_LOCAL, 'local'),
-             (T_TWITTER, 'twitter'),
-             (T_FLICKER, 'flickr'))
+    TYPES = {
+        T_LOCAL: 'local',
+        T_TWITTER: 'twitter',
+        T_FLICKER: 'flickr'
+    }
 
     name = models.CharField(max_length=20)
     avatar_uri = models.CharField(max_length=255, blank=True)
-
-    source = models.PositiveSmallIntegerField(choices=TYPES)
 
     # for local account
     owner = models.ForeignKey(User, null=True, blank=True, default=None)
 
     # for external account
+    source = models.PositiveSmallIntegerField(choices=TYPES.items(), 
+                                              default=T_LOCAL)
     external_id = models.CharField(max_length=255, blank=True)
     token = models.CharField(max_length=255, blank=True)
 
     def gavatar_uri(self):
-        return _get_gavatar_uri(self.owner.email)
+        '''TODO'''
+        if self.source == self.T_LOCAL:
+            email = self.owner.email
+        elif self.source == self.T_TWITTER:
+            email = '{}@twitter.com'.format(self.name)
+            
+        return _get_gavatar_uri(email)
 
 
 class PostManager(models.Manager):
+    '''TODO'''
     _queryset = None
 
     def _get_query_set(self):
+        '''TODO'''
         if None is self._queryset:
             self._queryset = super(PostManager, self).get_query_set()
 
         return self._queryset
 
     def _update_query_set(self, queryset):
+        '''TODO'''
         self._queryset = queryset
 
     def get_query_set(self):
+        '''TODO'''
         if None is self._queryset:
             return super(PostManager, self).get_query_set()
         else:
@@ -77,11 +93,13 @@ class PostManager(models.Manager):
             return tmp
 
     def recent(self):
+        '''TODO'''
         self._update_query_set(self._get_query_set().order_by('-created'))
 
         return self
 
     def with_user(self, user):
+        '''TODO'''
         self.model.current_user = user
         self._update_query_set(
             self._get_query_set().exclude(bans=self.model.current_user))
@@ -89,6 +107,7 @@ class PostManager(models.Manager):
         return self
 
     def by_user(self, user):
+        '''TODO'''
         if type(user) is str:
             user = int(user)
 
@@ -101,6 +120,7 @@ class PostManager(models.Manager):
         return self
 
     def nearby(self, lat, lng, range=2000):
+        '''TODO'''
         lat_offset = geo.get_lat_offset_by_distance(range)
         lng_offset = geo.get_lng_offset_by_distance(range, lat)
 
@@ -120,6 +140,16 @@ class Post(models.Model):
     SCENARIOS = (SCENARIO_DEFAULT, SCENARIO_UG)
 
     scenario = SCENARIO_DEFAULT
+    
+    T_LOCAL = 0
+    T_TWITTER = 1
+    T_FLICKER = 2
+    
+    TYPES = {
+        T_LOCAL: 'local',
+        T_TWITTER: 'twitter',
+        T_FLICKER: 'flickr'
+    }
 
     content = models.CharField(max_length=200)
 
@@ -130,6 +160,11 @@ class Post(models.Model):
     address = models.CharField(max_length=100)
 
     created = models.DateTimeField(auto_now_add=True)
+    
+    source = models.PositiveSmallIntegerField(choices=TYPES.items(), 
+                                              default=T_LOCAL)
+    external_id = models.CharField(max_length=255, blank=True)
+    external_data = models.TextField()
 
     likes = models.ManyToManyField(User, related_name='likes')
     bans = models.ManyToManyField(User, related_name='bans')
@@ -139,5 +174,6 @@ class Post(models.Model):
     current_user = False
 
     def is_liked(self):
+        '''TODO'''
         return Post.current_user and \
             self.likes.filter(id=Post.current_user.id).exists()
