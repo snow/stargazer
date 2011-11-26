@@ -11,3 +11,4 @@ sqlite3.db
 data.txt
 # logs
 logs
+settings.py
