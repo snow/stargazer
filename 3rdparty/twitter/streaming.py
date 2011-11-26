@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: UTF-8 -*-
 import os
+import sys
 from os.path import dirname, abspath
 from optparse import OptionParser
 import re
