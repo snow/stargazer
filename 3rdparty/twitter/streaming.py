@@ -25,6 +25,10 @@ _datafile = open(dirname(abspath(__file__)) + '/data.txt', 'a')
 
 class SgzStreamListener(StreamListener):
     '''TODO'''
+    
+    def __init__(self, api=None):
+        self._latlng2addr = LatLng2Addr()        
+        super(SgzStreamListener, self).__init__(api)
 
     def on_data(self, data):
         '''TODO'''
@@ -65,9 +69,10 @@ class SgzStreamListener(StreamListener):
         except Post.DoesNotExist:
             lat = float(status.geo['coordinates'][0])
             lng = float(status.geo['coordinates'][1])
+            
             try:
-                addr = latlng2addr.get(lat, lng)
-            except:
+                addr = self._latlng2addr.get(lat, lng)
+            except LatLng2Addr.BaseException as e:
                 addr = ''
                 
             # twitter api response in UTC

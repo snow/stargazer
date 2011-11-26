@@ -7,6 +7,18 @@ class LatLng2Addr():
 
     API_RETRY_LIMIT = 3
     retry_count = 0
+    
+    class BaseException(Exception):
+        pass
+    
+    class ConnectionFailed(BaseException):
+        pass
+    
+    class GeocodingFailed(BaseException):
+        pass
+    
+    class UnregonizedResponse(BaseException):
+        pass
 
     def call_api(self, lat, lng):
         try:
@@ -18,7 +30,7 @@ class LatLng2Addr():
                 retry_count += 1
                 return self.call_api(lat, lng)
             else:
-                raise Exception('failed to connect Google Geocoding service')
+                raise self.ConnectionFailed('failed to connect Google Geocoding service')
         else:
             result = json.loads(api_resp.read())
 
@@ -28,10 +40,10 @@ class LatLng2Addr():
             # exceptions
             elif 'ZERO_RESULTS' == result['status'] or \
                  'NOT_FOUND' == result['status']:
-                raise Exception('failed geocoding by Google Geocoding service')
+                raise self.GeocodingFailed('failed geocoding by Google Geocoding service')
 
             else:
-                raise Exception('unregonized response from '+
+                raise self.UnregonizedResponse('unregonized response from '+
                               'Google Geocoding service')
 
     def process_api_results(self, results):
