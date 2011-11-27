@@ -14,7 +14,7 @@ class LatLng2Addr():
             if not settings.DEBUG:
                 self.message = 'failed to get address from latlng'
                 
-            super(BaseException, self).__init__(*args, **kwargs)
+            super(self.BaseException, self).__init__(*args, **kwargs)
     
     class ConnectionFailed(BaseException):
         message = 'failed to connect Google Geocoding service'
@@ -30,7 +30,8 @@ class LatLng2Addr():
         
         def __init__(self, status, *args, **kwargs):
             self.message += ': ' + status
-            super(UnregonizedResponse, self).__init__(*args, **kwargs)
+            super(self.UnregonizedResponse, self).__init__(*args, 
+                                                                  **kwargs)
 
     def call_api(self, lat, lng):
         try:
@@ -63,7 +64,6 @@ class LatLng2Addr():
 
     def process_api_results(self, results):
         result = results[0]
-
         address = ''
 
         for com in result['address_components']:
