@@ -39,8 +39,7 @@ class LatLng2Addr():
     def call_api(self, lat, lng):
         try:
             api_resp = urllib2.urlopen(self.API_URI+
-                '?latlng={},{}&language=zh-CN&sensor=false&key={}'.\
-                    format(lat, lng, settings.GOOGLE_API_KEY))
+                '?latlng={},{}&language=zh-CN&sensor=false'.format(lat, lng))
 
         except urllib2.URLError as err:
             if self.retry_count < self.API_RETRY_LIMIT:
