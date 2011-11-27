@@ -9,6 +9,7 @@ migrations
 # db
 sqlite3.db
 data.txt
+data
 # logs
 logs
 settings.py

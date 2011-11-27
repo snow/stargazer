@@ -4,8 +4,8 @@ from os.path import dirname, abspath
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-_PROJ_ROOT = dirname(abspath(__file__))
-_PROJ_DIRNAME = _PROJ_ROOT.split('/')[-1]
+PROJECT_ROOT = dirname(abspath(__file__))
+PROJECT_NAME = PROJECT_ROOT.split('/')[-1]
 AUTH_PROFILE_MODULE = 'core.UserProfile'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -29,16 +29,16 @@ EMAIL_USE_TLS = True
 
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': _PROJ_ROOT + '/sqlite3.db',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
-}
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+#        'NAME': PROJECT_ROOT + '/data/sqlite3.db',                      # Or path to database file if using sqlite3.
+#        'USER': '',                      # Not used with sqlite3.
+#        'PASSWORD': '',                  # Not used with sqlite3.
+#        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+#        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+#    }
+#}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -65,7 +65,7 @@ USE_L10N = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '{}/webroot/media'.format(_PROJ_ROOT)
+MEDIA_ROOT = '{}/webroot/media'.format(PROJECT_ROOT)
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -92,7 +92,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '{}/webroot/s'.format(_PROJ_ROOT),
+    '{}/webroot/s'.format(PROJECT_ROOT),
 )
 
 # List of finder classes that know how to find static files in
@@ -121,7 +121,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = _PROJ_DIRNAME + '.urls'
+ROOT_URLCONF = PROJECT_NAME + '.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -140,7 +140,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'south',
+    #'south',
     'core',
     'demo'
 )
