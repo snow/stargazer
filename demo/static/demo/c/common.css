@@ -45,10 +45,10 @@ form {padding:8px}
       height:28px; line-height:28px; text-align:right; color:#666;
       text-decoration:none; background:#eee; background-position:8px center;
       background-repeat:no-repeat}
-    #stream .li .like {background-image:url(/s/i/heart-unselected-16.png)}
-      #stream .li.on .like {background-image:url(/s/i/heart-selected-16.png);
+    #stream .li .like {background-image:url(/s/demo/i/heart-unselected-16.png)}
+      #stream .li.on .like {background-image:url(/s/demo/i/heart-selected-16.png);
         background-color:#ddd}
-    #stream .li .ban {background-image:url(/s/i/del-16.png); border-left:1px dashed #ccc}
+    #stream .li .ban {background-image:url(/s/demo/i/del-16.png); border-left:1px dashed #ccc}
 
     #stream .li .content,
     #stream .li .addr,
@@ -59,7 +59,7 @@ form {padding:8px}
 
     #stream .li .soundplayer {float:left; padding:0 12px 0 40px; height:32px;
       line-height:32px; color:#333;
-      background:#eee url(/s/i/sound.png) no-repeat 8px center}
+      background:#eee url(/s/demo/i/sound.png) no-repeat 8px center}
       #stream .li .soundplayer .play {margin-left:5px; color:#333; text-decoration:none}
 
 /*
@@ -76,7 +76,7 @@ form {padding:8px}
 
 #teleport .map_container {position:relative; height:350px}
 #teleport .map {background:#eee; height:100%}
-#teleport .overlay {position:absolute; top:50%; left:50%; width:16px; height:16px; background:url(/s/i/cross-16.png)}
+#teleport .overlay {position:absolute; top:50%; left:50%; width:16px; height:16px; background:url(/s/demo/i/cross-16.png)}
 #teleport .go {display:block; height:36px; line-height:36px; font-size:large; text-align:center; background:#ddd}
 
 #user_profile .info {padding:10px 10px 10px 65px}

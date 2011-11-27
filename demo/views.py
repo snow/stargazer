@@ -16,6 +16,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 
 from core.models import Post, Author, UserProfile
+from core.utils import LatLng2Addr
 
 l = logging.getLogger(__name__)
 
@@ -181,50 +182,19 @@ class TeleportView(TemplateView):
     template_name = 'demo/teleport.html'
 
 class LatLng2AddrView(View):
-    API_URI = 'http://maps.googleapis.com/maps/api/geocode/json'
+    '''TODO'''
 
-    API_RETRY_LIMIT = 3
-    retry_count = 0
-
-    def call_api(self, lat, lng):
+    def post(self, request, *args, **kwargs):
+        latlng2addr = LatLng2Addr()
         try:
-            api_resp = urllib2.urlopen(self.API_URI+
-                '?latlng={},{}&language=zh-CN&sensor=false'.format(lat, lng))
-
-        except urllib2.URLError as err:
-            if self.retry_count < self.API_RETRY_LIMIT:
-                retry_count += 1
-                return self.call_api(lat, lng)
-            else:
-                raise Exception('failed to connect Google Geocoding service')
-        else:
-            result = json.loads(api_resp.read())
-
-            if 'OK' == result['status']:
-                return result['results']
-
-            # exceptions
-            elif 'ZERO_RESULTS' == result['status'] or \
-                 'NOT_FOUND' == result['status']:
-                raise Exception('failed geocoding by Google Geocoding service')
-
-            else:
-                raise Exception('unregonized response from '+
-                              'Google Geocoding service')
-
-    def process_api_results(self, results):
-        result = results[0]
-
-        address = ''
-
-        for com in result['address_components']:
-            address = com['short_name'] + ' ' + address
-            if 'sublocality' in com['types']:
-                break
-
-        return address.strip()
-
-    def get(self, request, *args, **kwargs):
-        return HttpResponse(
-            self.process_api_results(
-                self.call_api(request.GET['lat'], request.GET['lng'])))
+            addr = latlng2addr.get(request.POST['lat'], request.POST['lng'])
+            err = False
+        except LatLng2Addr.BaseException as e:
+            addr = ''
+            err = e.message
+            
+        return HttpResponse(json.dumps({
+                                'error': err,
+                                'addr': addr,
+                            }),
+                            content_type='application/json')

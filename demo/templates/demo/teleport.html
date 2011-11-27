@@ -42,10 +42,8 @@
             var center = gmap.center;
                 lat = s.geo.trunk_latlng(center.lat()),
                 lng = s.geo.trunk_latlng(center.lng());
-
-            $.when(s.geo.latlng2addr(lat, lng)).done(function(addr){
-                s.j_doc.trigger(s.geo.E_LATLNG_DONE, [lat, lng, addr]);
-            });
+                
+            s.j_doc.trigger(s.geo.E_ADDR_START, [lat, lng]);
         });
     }
 

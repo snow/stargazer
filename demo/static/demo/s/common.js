@@ -6,6 +6,20 @@
     window.s = {}
 
     s.j_doc = $(document);
+    
+    s.post = function(url, params){
+        params.type = 'POST';
+        
+        if('undefined' === typeof s.csrf){
+            s.csrf = $('[name=csrfmiddlewaretoken]').val();
+        }
+        if('undefined' === typeof params.data){
+            params.data = {}
+        }        
+        params.data.csrfmiddlewaretoken = s.csrf
+        
+        return $.ajax(url, params);
+    }
 })(jQuery);
 
 /*
@@ -52,17 +66,15 @@
         var j_stream_item = $(anchor).closest('.stream-item'),
             id = j_stream_item.attr('sid');
 
-        return $.ajax('/post/ban/',{
-            'type': 'POST',
-            'data':{'id':id, 'csrfmiddlewaretoken': csrf},
+        return s.post('/post/ban/',{
+            'data': {'id': id},
             'success': function(data){
                 j_stream_item.hide('fast', function() {
                     $(this).remove();
                 });
             },
-            'dataType':'json'
+            'dataType': 'json'
         });
-
     };
 
     s.stream.like = function(anchor) {
@@ -76,8 +88,8 @@
             cur_like_cnt = 0;
         }
 
-        return n.ajax('/post/like/', {
-            'data':{'id':id, 'csrfmiddlewaretoken': csrf},
+        return s.post('/post/like/', {
+            'data': {'id': id},
             'success': function(data){
                 if(j_stream_item.hasClass('on')) {
                     j_anchor.text(Math.max(0, cur_like_cnt-1));
@@ -87,7 +99,7 @@
                     j_stream_item.addClass('on');
                 }
             },
-            'dataType':'json'
+            'dataType': 'json'
         });
     };
 })(jQuery);
@@ -139,6 +151,21 @@
             return str.substr(0, pidx+8);
         }
     }
+    
+    s.geo.get_address = function(lat, lng){
+        s.geo.latlng2addr(lat, lng, function(data){
+            console.log(data);
+            if (data.error){
+                s.j_doc.trigger(s.geo.E_ADDR_FAIL);
+            } else {
+                s.j_doc.trigger(s.geo.E_ADDR_DONE);
+                s.j_doc.trigger(s.geo.E_LATLNG_DONE,
+                                [lat, lng, data.addr]);
+            }
+        }, function(){
+            s.j_doc.trigger(s.geo.E_ADDR_FAIL);
+        });
+    }
 
     s.geo.get_location = function(options){
         if(navigator.geolocation) {
@@ -153,18 +180,7 @@
                         [lat, lng, position.address.street + ' ' +
                             position.address.streetNumber]);
                 } else {
-                    s.j_doc.trigger(s.geo.E_ADDR_START);
-                    $.ajax(LATLNG_TO_ADDR_API, {
-                        data: {'lat': lat, 'lng': lng},
-                        dataType: 'text',
-                        success: function(addr){
-                            s.j_doc.trigger(s.geo.E_ADDR_DONE);
-                            s.j_doc.trigger(s.geo.E_LATLNG_DONE,
-                                            [lat, lng, addr]);
-                        },
-                        fail: function(){
-                            s.j_doc.trigger(s.geo.E_ADDR_FAIL);
-                        }});
+                    s.j_doc.trigger(s.geo.E_ADDR_START, [lat, lng]);
                 }
             },
             function() {
@@ -176,28 +192,33 @@
         }
     };
 
-    s.geo.latlng2addr = function(lat, lng, callback){
-        var settings = {
+    s.geo.latlng2addr = function(lat, lng, success, fail){
+        var params = {
             data: {
                 'lat': lat,
                 'lng': lng
             },
-            dataType: 'text'
+            dataType: 'json'
         }
 
-        if('function' === typeof callback){
-            settings.success = callback;
+        if('function' === typeof success){
+            params.success = success;
+        }
+        
+        if('function' === typeof fail){
+            params.fail = fail;
         }
 
-        return $.ajax(LATLNG_TO_ADDR_API, settings);
+        return s.post(LATLNG_TO_ADDR_API, params);
     };
 
     s.geo.update_locbar_start = function(j_locbar, message){
         j_locbar.removeClass('done fail').addClass('ing');
-        j_locbar.find('.stat').text(LOCATING_MSG);
-    }
+        j_locbar.find('.stat').text(message);
+        j_locbar.find('.addr').empty();
+    };
 
-    s.geo.update_locbar = function(j_locbar, lat, lng, addr){
+    s.geo.update_locbar_done = function(j_locbar, lat, lng, addr){
         j_locbar.removeClass('ing').addClass('done');
         j_locbar.find('.lat').text(lat);
         j_locbar.find('.lng').text(lng);
@@ -208,7 +229,7 @@
     s.geo.update_locbar_err = function(j_locbar, message){
         j_locbar.removeClass('ing').addClass('fail');
         j_locbar.find('.stat').text(message);
-    }
+    };
 
     function update_locuri(uri, lat, lng, addr){
         var ar = uri.split('?'),
@@ -251,11 +272,12 @@
         s.j_doc.bind(s.geo.E_LATLNG_START, function(e){
             s.geo.update_locbar_start(j_locbar, LOCATING_MSG);
         }).
-        bind(s.geo.E_ADDR_START, function(e){
+        bind(s.geo.E_ADDR_START, function(e, lat, lng){
             s.geo.update_locbar_start(j_locbar, ADDRESSING_MSG);
+            s.geo.get_address(lat, lng);
         })
         .bind(s.geo.E_LATLNG_DONE, function(e, lat, lng, addr){
-            s.geo.update_locbar(j_locbar, lat, lng, addr)
+            s.geo.update_locbar_done(j_locbar, lat, lng, addr)
         }).
         bind(s.geo.E_LATLNG_FAIL, function(e){
             s.geo.update_locbar_err(j_locbar, FAILED_LOCATION_MSG);
