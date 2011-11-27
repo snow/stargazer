@@ -10,6 +10,7 @@ migrations
 sqlite3.db
 data.txt
 data
+webroot
 # logs
 logs
 settings.py

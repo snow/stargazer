@@ -2,6 +2,8 @@
 import urllib2
 import json
 
+from django.conf import settings
+
 class LatLng2Addr():
     API_URI = 'http://maps.googleapis.com/maps/api/geocode/json'
 
@@ -9,16 +11,27 @@ class LatLng2Addr():
     retry_count = 0
     
     class BaseException(Exception):
-        pass
+        def __init__(self, *args, **kwargs):
+            if not settings.DEBUG:
+                self.message = 'failed to get address from latlng'
+                
+            super(BaseException, self).__init__(*args, **kwargs)
     
     class ConnectionFailed(BaseException):
-        pass
+        message = 'failed to connect Google Geocoding service'
     
     class GeocodingFailed(BaseException):
-        pass
+        message = 'failed geocoding by Google Geocoding service'
+    
+    class OverQueryLimit(BaseException):
+        message = 'over query limit of Google Geocoding service'
     
     class UnregonizedResponse(BaseException):
-        pass
+        message = 'unregonized response from Google Geocoding service'
+        
+        def __init__(self, status, *args, **kwargs):
+            self.message += ': ' + status
+            super(UnregonizedResponse, self).__init__(*args, **kwargs)
 
     def call_api(self, lat, lng):
         try:
@@ -30,7 +43,7 @@ class LatLng2Addr():
                 retry_count += 1
                 return self.call_api(lat, lng)
             else:
-                raise self.ConnectionFailed('failed to connect Google Geocoding service')
+                raise self.ConnectionFailed()
         else:
             result = json.loads(api_resp.read())
 
@@ -40,11 +53,13 @@ class LatLng2Addr():
             # exceptions
             elif 'ZERO_RESULTS' == result['status'] or \
                  'NOT_FOUND' == result['status']:
-                raise self.GeocodingFailed('failed geocoding by Google Geocoding service')
+                raise self.GeocodingFailed()
+                
+            elif 'OVER_QUERY_LIMIT' == result['status']:
+                raise self.OverQueryLimit()
 
             else:
-                raise self.UnregonizedResponse('unregonized response from '+
-                              'Google Geocoding service')
+                raise self.UnregonizedResponse(result['status'])
 
     def process_api_results(self, results):
         result = results[0]
