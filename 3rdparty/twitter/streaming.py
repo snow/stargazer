@@ -32,7 +32,7 @@ class SgzStreamListener(StreamListener):
 
     def on_data(self, data):
         '''TODO'''
-        _datafile.write(data+'\n')
+        #_datafile.write(data+'\n')
         
         if 'in_reply_to_status_id' in data:
             if self.on_status(data) is False:
@@ -49,6 +49,7 @@ class SgzStreamListener(StreamListener):
         status = Status.parse(self.api, json.loads(data))
         
         if not status.geo:
+            #_datafile.write(data+'\n')
             return
         
         try:
@@ -115,10 +116,10 @@ if '__main__' == __name__:
                                 settings.TWITTER_PASSWORD)
         listener = SgzStreamListener()
         stream = Stream(auth, listener)
-        stream.filter(locations=(103.9278, 30.5620, 104.2097, 30.7882))
-#        stream.filter(locations=(97.00, 20.54, 123.02, 42.80, # center
-#                                 72.74, 26.66, 97.00, 49.43,  # west
-#                                 115.02, 38.54, 135.50, 53.90)) # ne
+        #stream.filter(locations=(103.9278, 30.5620, 104.2097, 30.7882))
+        stream.filter(locations=(97.00, 20.54, 123.02, 42.80, # center
+                                 72.74, 26.66, 97.00, 49.43,  # west
+                                 115.02, 38.54, 135.50, 53.90)) # ne
         
     except:
         mail_admins('Streaming process dead', sys.exc_info()[0])
