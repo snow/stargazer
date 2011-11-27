@@ -7,7 +7,13 @@ from django.conf import settings
 class LatLng2Addr():
     API_URI = 'http://maps.googleapis.com/maps/api/geocode/json'
     API_RETRY_LIMIT = 3
-    retry_count = 0
+    TIMES_OVER_QUERY_ALLOWED = 10
+    TIMES_TOTAL_QUERY_ALLOWED = 2000
+    
+    def __init__(self):
+        self.retry_count = 0
+        self.times_over_limit = 0
+        self.times_total_query = 0
     
     class BaseException(Exception):
         def __init__(self, *args, **kwargs):
@@ -37,6 +43,11 @@ class LatLng2Addr():
                                                                   **kwargs)
 
     def call_api(self, lat, lng):
+        '''TODO'''
+        
+        if self.TIMES_TOTAL_QUERY_ALLOWED <= self.times_total_query:
+            raise self.OverQueryLimit()
+        
         try:
             api_resp = urllib2.urlopen(self.API_URI+
                 '?latlng={},{}&language=zh-CN&sensor=false'.format(lat, lng))
@@ -49,6 +60,8 @@ class LatLng2Addr():
                 raise self.ConnectionFailed()
         else:
             result = json.loads(api_resp.read())
+            
+            self.times_total_query += 1
 
             if 'OK' == result['status']:
                 return result['results']
@@ -59,7 +72,11 @@ class LatLng2Addr():
                 raise self.GeocodingFailed()
                 
             elif 'OVER_QUERY_LIMIT' == result['status']:
-                raise self.OverQueryLimit()
+                self.times_over_limit += 1
+                if self.TIMES_OVER_QUERY_ALLOWED <= self.times_over_limit:
+                    raise self.OverQueryLimit()
+                else:
+                    raise self.ConnectionFailed()
             
             elif 'REQUEST_DENIED' == result['status']:
                 raise self.RequestDenied()

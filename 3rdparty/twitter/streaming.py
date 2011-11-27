@@ -73,7 +73,8 @@ class SgzStreamListener(StreamListener):
             
             try:
                 addr = self._latlng2addr.get(lat, lng)
-            except LatLng2Addr.BaseException as e:
+            except (LatLng2Addr.ConnectionFailed, 
+                    LatLng2Addr.GeocodingFailed) as e:
                 addr = ''
                 
             # twitter api response in UTC
@@ -117,10 +118,14 @@ if '__main__' == __name__:
         listener = SgzStreamListener()
         stream = Stream(auth, listener)
         #stream.filter(locations=(103.9278, 30.5620, 104.2097, 30.7882))
-        stream.filter(locations=(97.00, 20.54, 123.02, 42.80, # center
-                                 72.74, 26.66, 97.00, 49.43,  # west
-                                 115.02, 38.54, 135.50, 53.90)) # ne
-        
+#        stream.filter(locations=(97.00, 20.54, 123.02, 42.80, # center
+#                                 72.74, 26.66, 97.00, 49.43,  # west
+#                                 115.02, 38.54, 135.50, 53.90)) # ne
+        stream.filter(locations=(116.2, 39.75, 116.56, 40.03, # beijing
+                                 121.09, 30.64, 122.12, 31.56,  # shanghai
+                                 118.06, 24.37, 118.49, 24.56, # xiamen, jinmen
+                                 91, 29.62, 91.2, 29.7,  # lasha
+                                 103.93, 30.56, 104.21, 30.79,)) # chengdu   
     except:
         mail_admins('Streaming process dead', sys.exc_info()[0])
         raise    
@@ -146,6 +151,30 @@ if '__main__' == __name__:
 # E 135.49631881644018
 # S 38.54198948702897
 # W 115.01780319144018
+
+# 北京五环
+# N 40.027877331076056
+# E 116.56000900198705
+# S 39.7528651261641
+# W 116.19952011038549
+
+# 上海
+# N 31.561277237241423
+# E 122.12321090628393
+# S 30.642933640496892
+# W 121.08568954397924
+
+# 厦门和金门
+# N 24.5624246134917
+# E 118.48879623343237
+# S 24.3711791144157
+# W 118.06170272757299
+
+# 拉萨
+# N 29.698789407596635
+# E 91.20665359427221
+# S 29.627488464712375
+# W 91.0030632012058
 
 # 成都绕城
 # NORTH = 30.78815194486169
