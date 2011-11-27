@@ -14,7 +14,7 @@ class LatLng2Addr():
             if not settings.DEBUG:
                 self.message = 'failed to get address from latlng'
                 
-            super(self.BaseException, self).__init__(*args, **kwargs)
+            super(LatLng2Addr.BaseException, self).__init__(*args, **kwargs)
     
     class ConnectionFailed(BaseException):
         message = 'failed to connect Google Geocoding service'
@@ -24,13 +24,16 @@ class LatLng2Addr():
     
     class OverQueryLimit(BaseException):
         message = 'over query limit of Google Geocoding service'
+        
+    class RequestDenied(BaseException):
+        message = 'request denied by Google Geocoding service'
     
     class UnregonizedResponse(BaseException):
         message = 'unregonized response from Google Geocoding service'
         
         def __init__(self, status, *args, **kwargs):
             self.message += ': ' + status
-            super(self.UnregonizedResponse, self).__init__(*args, 
+            super(LatLng2Addr.UnregonizedResponse, self).__init__(*args, 
                                                                   **kwargs)
 
     def call_api(self, lat, lng):
@@ -58,6 +61,9 @@ class LatLng2Addr():
                 
             elif 'OVER_QUERY_LIMIT' == result['status']:
                 raise self.OverQueryLimit()
+            
+            elif 'REQUEST_DENIED' == result['status']:
+                raise self.RequestDenied()
 
             else:
                 raise self.UnregonizedResponse(result['status'])

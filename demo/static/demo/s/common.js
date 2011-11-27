@@ -114,6 +114,7 @@
         FAILED_LOCATION_MSG = '获取位置失败 /. .\\',
         ADDRESSING_MSG = '正在获取地址...',
         FAILED_ADDRESSING_MSG = '获取地址失败 /. .\\',
+        FALLBACK_ADDR = '一个神秘的地方',
 
         LATLNG_TO_ADDR_API = '/utils/latlng2addr/';
 
@@ -152,22 +153,24 @@
         }
     }
     
-    s.geo.get_address = function(lat, lng){
-        s.geo.latlng2addr(lat, lng, function(data){
-            console.log(data);
+    function get_address(lat, lng){
+        var addr = FALLBACK_ADDR;
+        
+        $.when(s.geo.latlng2addr(lat, lng, function(data){
             if (data.error){
                 s.j_doc.trigger(s.geo.E_ADDR_FAIL);
             } else {
                 s.j_doc.trigger(s.geo.E_ADDR_DONE);
-                s.j_doc.trigger(s.geo.E_LATLNG_DONE,
-                                [lat, lng, data.addr]);
+                addr = data.addr
             }
         }, function(){
             s.j_doc.trigger(s.geo.E_ADDR_FAIL);
+        })).done(function(){
+            s.j_doc.trigger(s.geo.E_LATLNG_DONE, [lat, lng, addr]);
         });
     }
 
-    s.geo.get_location = function(options){
+    function get_location(options){
         if(navigator.geolocation) {
             s.j_doc.trigger(s.geo.E_LATLNG_START);
 
@@ -192,7 +195,7 @@
         }
     };
 
-    s.geo.latlng2addr = function(lat, lng, success, fail){
+    s.geo.latlng2addr = function(lat, lng, success, error){
         var params = {
             data: {
                 'lat': lat,
@@ -206,7 +209,7 @@
         }
         
         if('function' === typeof fail){
-            params.fail = fail;
+            params.error = error;
         }
 
         return s.post(LATLNG_TO_ADDR_API, params);
@@ -274,7 +277,7 @@
         }).
         bind(s.geo.E_ADDR_START, function(e, lat, lng){
             s.geo.update_locbar_start(j_locbar, ADDRESSING_MSG);
-            s.geo.get_address(lat, lng);
+            get_address(lat, lng);
         })
         .bind(s.geo.E_LATLNG_DONE, function(e, lat, lng, addr){
             s.geo.update_locbar_done(j_locbar, lat, lng, addr)
@@ -307,7 +310,7 @@
         if(lat && lng && addr){
             s.j_doc.trigger(s.geo.E_LATLNG_DONE, [lat, lng, addr]);
         } else {
-            s.geo.get_location(options);
+            get_location(options);
         }
     }
 
