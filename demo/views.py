@@ -5,7 +5,7 @@ import logging
 
 from django.views.generic import View, TemplateView, CreateView, ListView, \
                                  FormView, DetailView, RedirectView
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.forms import ModelForm, Textarea, HiddenInput
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
@@ -181,20 +181,3 @@ class UserProfileView(DetailView):
 class TeleportView(TemplateView):
     template_name = 'demo/teleport.html'
 
-class LatLng2AddrView(View):
-    '''TODO'''
-
-    def post(self, request, *args, **kwargs):
-        latlng2addr = LatLng2Addr()
-        try:
-            addr = latlng2addr.get(request.POST['lat'], request.POST['lng'])
-            err = False
-        except LatLng2Addr.BaseException as e:
-            addr = ''
-            err = e.message
-            
-        return HttpResponse(json.dumps({
-                                'error': err,
-                                'addr': addr,
-                            }),
-                            content_type='application/json')

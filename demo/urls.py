@@ -25,11 +25,6 @@ urlpatterns = patterns('',
     url(r'^me/$', login_required(MeView.as_view())),
 
     url(r'^teleport/$', TeleportView.as_view()),
-
-    url(r'^utils/latlng2addr/$', LatLng2AddrView.as_view()),
-
-    url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
-    url(r'^accounts/logout/$', 'django.contrib.auth.views.logout',
-        {'next_page': '/post/recent/'}),
+    
     url(r'^accounts/signup/$', SignupView.as_view()),
 )
