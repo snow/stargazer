@@ -2,6 +2,7 @@
 import json
 
 from django.views.generic import View
+from django.http import HttpResponse
 
 from core.utils import LatLng2Addr
 

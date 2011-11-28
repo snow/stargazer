@@ -208,7 +208,7 @@
             params.success = success;
         }
         
-        if('function' === typeof fail){
+        if('function' === typeof error){
             params.error = error;
         }
 
