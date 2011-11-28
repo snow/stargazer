@@ -8,19 +8,6 @@ from pyrcp import geo
 
 l = logging.getLogger(__name__)
 
-# Create your models here.
-#class ExternalAccount(models.Model):
-#    TYPES = ((0, 'local'),
-#             (1, 'twitter'),
-#             (2, 'flickr'))
-#
-#    type = models.PositiveSmallIntegerField(choices=TYPES)
-#    external_id = models.CharField(max_length=255)
-#    name = models.CharField(max_length=20)
-#    avatar_uri = models.CharField(max_length=255)
-#
-#    owner = models.ForeignKey(User, null=True, blank=True, default=None)
-#    token = models.CharField(max_length=255, blank=True)
 def _get_gavatar_uri(email):
     '''TODO'''
     return 'http://www.gravatar.com/avatar/{}?s=48&d=monsterid'.\
@@ -29,6 +16,11 @@ def _get_gavatar_uri(email):
 class UserProfile(models.Model):
     '''TODO'''
     user = models.ForeignKey(User, unique=True)
+    
+    twitter_id = models.CharField(max_length=255, blank=True)
+    twitter_username = models.CharField(max_length=255, blank=True)
+    twitter_key = models.CharField(max_length=255, blank=True)
+    twitter_secret = models.CharField(max_length=255, blank=True)
 
     def gavatar_uri(self):
         '''TODO'''

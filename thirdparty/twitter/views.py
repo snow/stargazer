@@ -2,103 +2,85 @@
 from django.views.generic import View
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from tweepy import OAuthHandler as tweepy_OAuthHandler, TweepError, oauth
+from tweepy import OAuthHandler, API
 
-import pprint
-
-from urllib2 import Request, urlopen
-import base64
-
-from tweepy.api import API
-
-pp = pprint.PrettyPrinter(indent=4)
-
-class OAuthHandler(tweepy_OAuthHandler):
-    '''TODO'''
-#    def get_authorization_url(self, signin_with_twitter=False):
-#        """Get the authorization URL to redirect the user"""
-#        try:
-#            # get the request token
-#            self.request_token = self._get_request_token()
-#
-#            # build auth request and return as url
-#            if signin_with_twitter:
-#                url = self._get_oauth_url('authenticate')
-#            else:
-#                url = self._get_oauth_url('authorize')
-#            request = oauth.OAuthRequest.from_token_and_callback(
-#                token=self.request_token, 
-#                http_url=url,
-#                callback=self.callback
-#            )
-#
-#            return request.to_url()
-#        except Exception, e:
-#            raise #TweepError(e)
-#        
-#    def _get_request_token(self):
-#        try:
-#            url = self._get_oauth_url('request_token')
-#            request = oauth.OAuthRequest.from_consumer_and_token(
-#                self._consumer, http_url=url, callback=self.callback
-#            )
-#            request.sign_request(self._sigmethod, self._consumer, None)
-#            
-#            return request.to_url()
-#            
-#            resp = urlopen(Request(url, headers=request.to_header()))
-#            return oauth.OAuthToken.from_string(resp.read())
-#        except Exception, e:
-#            raise #TweepError(e)
+AUTHORIZE_START_URI = '/thirdparty/twitter/authorize/'
+AUTHORIZE_RETURN_URI = '/thirdparty/twitter/authorize_return/'
+AUTHORIZE_DONE_URI = '/thirdparty/twitter/authorize_done/'
 
 class BaseOAuthV(View):
-    '''TODO'''
-    
+    '''Base class for all views that will use OAuth handler'''
     def __init__(self, *args, **kwargs):
-        self.oauth_handler = OAuthHandler(settings.TWITTER_CONSUMER_KEY,
-                                          settings.TWITTER_CONSUMER_SECRET,
-                                          secure=True)
+        self.oauth = OAuthHandler(settings.TWITTER_CONSUMER_KEY,
+                                  settings.TWITTER_CONSUMER_SECRET,
+                                  secure=True)
         super(BaseOAuthV, self).__init__(*args, **kwargs)
     
-    
 class IndexV(BaseOAuthV):    
-    '''View for path/to/3rdparty/twitter/ '''
+    '''Index, determine what action should take'''
     def get(self, request):
-        access_token = request.session.get('access_token', None)
-        if not access_token:
-            return HttpResponseRedirect('/thirdparty/twitter/authorize/')
+        if request.user.is_authenticated():        
+            profile = request.user.get_profile()
+            
+            if profile.twitter_key:
+                return HttpResponseRedirect(AUTHORIZE_DONE_URI)
+            else:
+                return HttpResponseRedirect(AUTHORIZE_START_URI)
+        else:
+            # show signin with twitter page
+            pass
         
 class AuthorizeV(BaseOAuthV):        
-    '''View for path/to/3rdparty/twitter/authorize'''    
+    '''Start from here. Redirect to twitter authorizing page'''    
     def get(self, request):
-        self.oauth_handler.callback = request.build_absolute_uri(
-                                        '/thirdparty/twitter/authorize_return/')
-        redirect_to = self.oauth_handler.get_authorization_url()
-        request.session['unauthed_token'] = self.oauth_handler.request_token
+        self.oauth.callback = request.build_absolute_uri(AUTHORIZE_RETURN_URI)
+        redirect_to = self.oauth.get_authorization_url()
+        # request token could being get after get_authorization_url()
+        request.session['unauthed_token'] = self.oauth.request_token
         return HttpResponseRedirect(redirect_to)
-        #return HttpResponse(request_token)
     
 class AuthorizeReturnV(BaseOAuthV):        
-    '''View for path/to/3rdparty/twitter/authorize_return'''    
+    '''Twitter redirect user to here after authorize'''    
     def get(self, request):
         if request.session['unauthed_token'].key == request.GET['oauth_token']:
-            self.oauth_handler.set_request_token(request.GET['oauth_token'], 
-                                                 settings.TWITTER_CONSUMER_SECRET)
-            self.oauth_handler.get_access_token(request.GET['oauth_verifier'])
+            self.oauth.set_request_token(request.GET['oauth_token'], 
+                                         settings.TWITTER_CONSUMER_SECRET)
+            access_token = self.oauth.get_access_token(
+                                request.GET['oauth_verifier'])
+        else:
+            raise Exception('token not match, something went wrong')
         
-        api = API(auth_handler=self.oauth_handler)
-        user = api.verify_credentials()
-        return HttpResponse(user.name)
+        twitter_user = API(auth_handler=self.oauth).verify_credentials()
+        
+        profile = request.user.get_profile()
+        profile.twitter_id = twitter_user.id
+        profile.twitter_username = twitter_user.screen_name
+        profile.twitter_key = access_token.key
+        profile.twitter_secret = access_token.secret
+        profile.save()
+        
+        return HttpResponseRedirect(AUTHORIZE_DONE_URI)
     
-class AuthenticateV(BaseOAuthV):        
-    '''View for path/to/3rdparty/twitter/authenticate'''
-    def get(self, request):        
-        pass
+class AuthorizeDoneV(BaseOAuthV):
+    '''TODO'''
+    def get(self, request):
+        up = request.user.get_profile()
+        
+        self.oauth.set_access_token(up.twitter_key, up.twitter_secret)
+        twittter_user = API(auth_handler=self.oauth).verify_credentials()
+        
+        return HttpResponse('connected with {} {}'.\
+                                format(twittter_user.id, 
+                                       twittter_user.screen_name))
     
-class SignoutV(BaseOAuthV):
-    '''/to/thirdparty/twitter/signout/'''
-    def get(self, request, *args, **kwargs):
-        request.session.flush()
-        return HttpResponseRedirect('/')    
+#class AuthenticateV(BaseOAuthV):        
+#    '''View for path/to/3rdparty/twitter/authenticate'''
+#    def get(self, request):        
+#        pass
+    
+#class SignoutV(BaseOAuthV):
+#    '''/to/thirdparty/twitter/signout/'''
+#    def get(self, request, *args, **kwargs):
+#        request.session.flush()
+#        return HttpResponseRedirect('/')
         
