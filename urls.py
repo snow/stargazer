@@ -20,5 +20,7 @@ urlpatterns = patterns('',
 urlpatterns += patterns('',
     url(r'^thirdparty/twitter/$', IndexV.as_view()),
     url(r'^thirdparty/twitter/authorize/$', AuthorizeV.as_view()),
-    url(r'^thirdparty/twitter/authenticate/$', AuthenticateV.as_view())
+    url(r'^thirdparty/twitter/authorize_return/$', AuthorizeReturnV.as_view()),
+    url(r'^thirdparty/twitter/authenticate/$', AuthenticateV.as_view()),
+    url(r'^thirdparty/twitter/signout/$', SignoutV.as_view())
 )
