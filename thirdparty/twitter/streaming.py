@@ -53,6 +53,11 @@ class SgzStreamListener(StreamListener):
             #_datafile.write(data+'\n')
             return
         
+        if Author.objects.\
+            filter(owner__userprofile__twitter_id=status.user.id_str).exists():
+            # this tweet's author is on stargazer
+            return
+        
         try:
             author = Author.objects.\
                         filter(source=Author.T_TWITTER, 
@@ -127,6 +132,9 @@ if '__main__' == __name__:
             pid_file.write(str(os.getpid()))
             pid_file.flush()
             
+            if args.DEBUG:
+                tweepy.debug()
+            
             try:
                 oauth = OAuthHandler(settings.TWITTER_CONSUMER_KEY,
                              settings.TWITTER_CONSUMER_SECRET,
@@ -149,6 +157,8 @@ if '__main__' == __name__:
                                          91, 29.62, 91.2, 29.7,  
                                          # chengdu    
                                          103.93, 30.56, 104.21, 30.79,))
+            except KeyboardInterrupt:
+                pass # avoid sendding email to admins
             except:
                 mail_admins('Streaming process dead', sys.exc_info()[0])
                 raise           

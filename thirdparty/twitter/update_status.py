@@ -15,6 +15,7 @@ from pyrcp.django.cli import setup_env
 
 settings = setup_env(__file__)
 
+from django.contrib.auth.models import User
 from core.models import Post
 
 PID_PATH = '{}/update_status.pid'.format(dirname(abspath(__file__)))
@@ -48,7 +49,9 @@ class Service():
         
     def get_post(self):
         '''Get a post that should push to twitter'''
-        qs = Post.objects.filter(source=Post.T_LOCAL).order_by('id')
+        twitter_users = User.objects.exclude(userprofile__twitter_key='')        
+        qs = Post.objects.filter(source=Post.T_LOCAL, 
+                                 author__owner__in=twitter_users).order_by('id')
         if None is self.since_id:
             posts = qs.filter(created__gte=datetime.now()-timedelta(minutes=1))
         else:        
@@ -56,12 +59,11 @@ class Service():
         
         for post in posts:
             user_profile = post.author.owner.get_profile()
-            if user_profile.twitter_key and user_profile.twitter_secret:
-                if args.DEBUG:
-                    print 'found one post to push: #{} "{}" by {}'.\
-                        format(post.id, post.content, post.author.name)
-                    
-                return (post, user_profile)
+            if args.DEBUG:
+                print 'found one post to push: #{} "{}" by {}'.\
+                    format(post.id, post.content, post.author.name)
+                
+            return (post, user_profile)
         
         if args.DEBUG:
             print 'no post to push'    
