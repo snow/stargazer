@@ -4,9 +4,10 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from tweepy import OAuthHandler, API
 
-AUTHORIZE_START_URI = '/thirdparty/twitter/authorize/'
-AUTHORIZE_RETURN_URI = '/thirdparty/twitter/authorize_return/'
-AUTHORIZE_DONE_URI = '/thirdparty/twitter/authorize_done/'
+BASE_URI = '/thirdparty/twitter'
+AUTHORIZE_START_URI = BASE_URI + '/authorize/'
+AUTHORIZE_RETURN_URI = BASE_URI + '/authorize_return/'
+AUTHORIZE_DONE_URI = BASE_URI + '/authorize_done/'
 
 class BaseOAuthV(View):
     '''Base class for all views that will use OAuth handler'''
