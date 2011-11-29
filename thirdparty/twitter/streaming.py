@@ -3,14 +3,15 @@
 import os
 import sys
 from os.path import dirname, abspath
-from optparse import OptionParser
+import argparse
 import re
 import json
 from datetime import timedelta
+import signal
 
 from django.core.mail import mail_admins
 import tweepy
-from tweepy import StreamListener, Stream, BasicAuthHandler
+from tweepy import StreamListener, Stream, OAuthHandler
 from tweepy.models import Status
 from pyrcp.django.cli import setup_env
 
@@ -93,45 +94,76 @@ class SgzStreamListener(StreamListener):
             
         return
 
+def _get_pid():
+    try:
+        pid_file = open(PID_PATH, 'r')
+    except IOError as err:
+        if 2 == err.errno:
+            return None # pidfile not exist
+        else:
+            raise # dont know what happend, let propagete
+    else:
+        pid = int(pid_file.read())
+        pid_file.close()
+        return pid
+    
 #
 # let's jean!
 # -------------
 #
 if '__main__' == __name__:
-    opt = OptionParser(usage='tweepyshell [options] <username> <password>')
-    opt.add_option('-d', '--debug',
-            action='store_true',
-            dest='debug',
-            help='enable debug mode')
-    options, args = opt.parse_args()
+    parser = argparse.ArgumentParser(
+                description='Pull geo-tagged status from twitter')
+    parser.add_argument('ACTION', default='start', nargs='?', 
+                        choices=('start', 'stop'))
+    parser.add_argument('-d', action='store_true', dest='DEBUG', 
+                        help='enable debug mode')
+    args = parser.parse_args()
+    #print parser.parse_args()
     
-    if options.debug:
-        tweepy.debug()
+    if 'start' == args.ACTION:
+        if None is _get_pid():
+            pid_file = open(PID_PATH, 'w')
+            pid_file.write(str(os.getpid()))
+            pid_file.flush()
+            
+            try:
+                oauth = OAuthHandler(settings.TWITTER_CONSUMER_KEY,
+                             settings.TWITTER_CONSUMER_SECRET,
+                             secure=True)
+                oauth.set_access_token(settings.TWITTER_ACCESS_KEY, 
+                                       settings.TWITTER_ACCESS_SECRET)
+                listener = SgzStreamListener()
+                stream = Stream(oauth, listener)
+                #stream.filter(locations=(103.9278, 30.5620, 104.2097, 30.7882))
+        #        stream.filter(locations=(97.00, 20.54, 123.02, 42.80, # center
+        #                                 72.74, 26.66, 97.00, 49.43,  # west
+        #                                 115.02, 38.54, 135.50, 53.90)) # ne
+                stream.filter(locations=(# beijing
+                                         116.2, 39.75, 116.56, 40.03, 
+                                         # shanghai
+                                         121.09, 30.64, 122.12, 31.56, 
+                                         # xiamen, jinmen 
+                                         118.06, 24.37, 118.49, 24.56, 
+                                         # lasha
+                                         91, 29.62, 91.2, 29.7,  
+                                         # chengdu    
+                                         103.93, 30.56, 104.21, 30.79,))
+            except:
+                mail_admins('Streaming process dead', sys.exc_info()[0])
+                raise           
+            finally:
+                pid_file.close()
+                os.remove(PID_PATH)
+        else:
+            print 'streaming service is already running'
         
-    try:
-        pid_file = open(PID_PATH, 'w')
-        pid_file.write(str(os.getpid()))
-        pid_file.flush()
-        
-        auth = BasicAuthHandler(settings.TWITTER_ACCOUNT, 
-                                settings.TWITTER_PASSWORD)
-        listener = SgzStreamListener()
-        stream = Stream(auth, listener)
-        #stream.filter(locations=(103.9278, 30.5620, 104.2097, 30.7882))
-#        stream.filter(locations=(97.00, 20.54, 123.02, 42.80, # center
-#                                 72.74, 26.66, 97.00, 49.43,  # west
-#                                 115.02, 38.54, 135.50, 53.90)) # ne
-        stream.filter(locations=(116.2, 39.75, 116.56, 40.03, # beijing
-                                 121.09, 30.64, 122.12, 31.56,  # shanghai
-                                 118.06, 24.37, 118.49, 24.56, # xiamen, jinmen
-                                 91, 29.62, 91.2, 29.7,  # lasha
-                                 103.93, 30.56, 104.21, 30.79,)) # chengdu   
-    except:
-        mail_admins('Streaming process dead', sys.exc_info()[0])
-        raise    
-    finally:
-        pid_file.close()
-        os.remove(PID_PATH)
+    elif 'stop' == args.ACTION:        
+        pid = _get_pid()
+        if None is pid:
+            print 'no streaming service running'
+        else:
+            os.kill(pid, signal.SIGINT)
 
 # some latlng
 # center china
