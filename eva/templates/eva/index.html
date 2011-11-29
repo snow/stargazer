@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="zh_cn" />
+	<title>Stargazer Client API Test | Eva</title>
+
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}common/c/blueprint.css" />
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}common/c/ags.css" />
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}eva/c/common.css" />
+	<script type="text/javascript" src="{{ STATIC_URL }}common/s/jquery.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}eva/s/common.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}eva/s/data.js"></script>
+</head>
+
+<body>
+	<div id="eva-container">
+
+		<h1>Stargazer Client API Test</h1>
+
+		<div id="eva-leftSidebar">
+		</div>
+
+		<div id="eva-main" class="container">
+		</div>
+
+		<div class="eva-entity eva-tpl s-h" tplName="entity">
+			<div class="hd clearfix">
+				<a class="eva-run eva-run-entity" href="javascript:void(0)">run</a>
+				<a class="eva-toggleEntity clearfix" href="javascript:void(0)">
+					<span class="eva-indicator"></span>
+					<h2 class="eva-entityName"></h2>
+				</a>
+			</div>
+			<div class="bd eva-methodLs">
+			</div>
+		</div>
+
+		<div class="eva-method eva-tpl s-h" tplName="method">
+			<div class="hd clearfix">
+				<a class="eva-run eva-run-method" href="javascript:void(0)">run</a>
+				<a class="eva-toggleMethod clearfix" href="javascript:void(0)">
+					<span class="eva-indicator"></span>
+					<h3 class="eva-methodName"></h3>
+				</a>
+			</div>
+			<div class="bd eva-conditionLs">
+			</div>
+		</div>
+
+		<div class="eva-condition eva-tpl s-h" tplName="condition">
+			<div class="hd clearfix">
+				<a class="eva-run eva-run-condition" href="javascript:void(0)">run</a>
+				<a class="eva-toggleCondition clearfix" href="javascript:void(0)">
+					<span class="eva-status">&nbsp;</span>
+					<strong class="eva-desc"></strong>
+				</a>
+			</div>
+			<div class="bd eva-extra">
+				<div class="eva-response eva-col-l"></div>
+				<div class="eva-wrapper eva-col-r clearfix">
+					<table class="eva-params">
+						<tbody>
+							<tr class="eva-param eva-tpl s-h" tplName="param">
+								<td class="eva-key"></td>
+								<td class="eva-value"></td>
+							</tr>
+						<tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</div><!-- #eva-container -->
+</body>
+</html>

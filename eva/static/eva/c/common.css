@@ -1,0 +1,52 @@
+@charset "utf-8";
+/* side wide style */
+
+/* layout */
+
+/* common */
+.eva-indicator {display:inline-block;visibility:hidden;width:1.5em;font-size:1.2em;text-align:center}
+a:hover .eva-indicator {visibility:visible}
+.eva-run {display:block;float:left;width:3em;text-align:center}
+
+.eva-entity .hd a {display:block;float:left;color:#fff;text-decoration:none}
+.eva-entity .hd a:hover {background-color:#f6f6f6;color:#222}
+
+.eva-entity .hd span,
+.eva-entity .hd h2,
+.eva-entity .hd h3 {float:left}
+
+.eva-entity h2,
+.eva-entity h3 {color:#fff;width:6em}
+
+.eva-entity a:hover h2,
+.eva-entity a:hover h3 {color:#222}
+
+/* entity */
+.eva-entity {background:#eee}
+
+.eva-entity > .hd {background:#333}
+	.eva-entity > .hd a {height:3.5em;line-height:3.5em}
+
+/* method */
+.eva-method > .hd {background:#666}
+	.eva-method > .hd a {height:3em;line-height:3em}
+	.eva-method > .hd h3 {line-height:1.8em}
+	/*.eva-method h3 a {margin-left:5px}*/
+
+/* condition */
+.eva-condition > .hd {height:3em;line-height:3em}
+.eva-entity .eva-condition > .hd a {color:#222}
+	.eva-condition.eva-success > .hd a {color:#999}
+
+.eva-condition .eva-status,
+.eva-condition .eva-desc {display:block;float:left;padding:0 1em}
+.eva-condition .eva-status {width:20em}
+	.eva-condition .eva-status.eva-ing {background:url(../img/loading.gif) no-repeat left center}
+
+.eva-condition .eva-extra {background:#f6f6f6}
+
+.eva-condition .eva-col-l {float:left;width:23em}
+.eva-condition .eva-col-r {margin-left:25em;padding:1em}
+
+.eva-condition .eva-response {padding:1em}
+	.eva-condition .eva-response pre {margin:0}
