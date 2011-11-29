@@ -31,7 +31,7 @@ jQuery.noConflict();
 
 				$.each(entity, function(methodName,method)
 				{
-					method.url = eva.api.baseUri + '/' + entityName + '/' + methodName;
+					method.url = eva.api.baseUri + '/' + entityName + '/' + methodName + '/';
 
 					var $method = eva.tpl.method.clone().appendTo($entityBody);
 					$method.find('.eva-methodName').text(methodName);
@@ -124,12 +124,17 @@ jQuery.noConflict();
 
 			var start, end, statusClass, statusText, responseHtml;
 			start = (new Date()).getTime();
+			
+			var data = condition.params;
+			if('POST' === condition.method.type){
+			    data.csrfmiddlewaretoken = pyrcp.get_csrf();
+			}
 
 			$.ajax({
 				url: condition.method.url,
 				type: condition.method.type,
 				dataType: 'json',
-				data: condition.params,
+				data: data,
 				beforeSend: function(xhr, settings)
 				{
 					$condition.find('.eva-status').removeClass('eva-queued').addClass('eva-ing').text('&nbsp;');

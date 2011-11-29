@@ -9,11 +9,13 @@
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}common/c/ags.css" />
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}eva/c/common.css" />
 	<script type="text/javascript" src="{{ STATIC_URL }}common/s/jquery.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}pyrcp/s/common.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}eva/s/common.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}eva/s/data.js"></script>
 </head>
 
 <body>
+    {% csrf_token %}
 	<div id="eva-container">
 
 		<h1>Stargazer Client API Test</h1>

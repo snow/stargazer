@@ -12,7 +12,7 @@
 	    }
 	};
 	
-	eva.api.entries.utils.latlng2addr = {
+	eva.api.entries.utils.ll2a = {
 	    type: 'POST',
 	    conditions: [
 	       {

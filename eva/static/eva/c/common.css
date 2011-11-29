@@ -41,7 +41,7 @@ a:hover .eva-indicator {visibility:visible}
 .eva-condition .eva-status,
 .eva-condition .eva-desc {display:block;float:left;padding:0 1em}
 .eva-condition .eva-status {width:20em}
-	.eva-condition .eva-status.eva-ing {background:url(../img/loading.gif) no-repeat left center}
+	.eva-condition .eva-status.eva-ing {background:url(/s/eva/i/loading.gif) no-repeat left center}
 
 .eva-condition .eva-extra {background:#f6f6f6}
 
