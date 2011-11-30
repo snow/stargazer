@@ -176,6 +176,9 @@
         var latregx = /lat\d+\.?\d*/i,
             lngregx = /lng\d+\.?\d*/i,
             nearbyregx = /\/nearby\//i;
+            
+        lat = sgz.geo.trunk_latlng(lat, 5);
+        lng = sgz.geo.trunk_latlng(lng, 5);
         
         if(-1 < uri.search(nearbyregx)){
             return uri.replace(nearbyregx, '/lat'+lat+'/lng'+lng+'/');
