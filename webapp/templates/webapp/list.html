@@ -1,0 +1,43 @@
+{% extends 'webapp/base.html' %}
+
+{% block title %}Feed{% endblock %}
+{% block page_title %}Feed{% endblock %}
+{% block page_class %}post_list{% endblock %}
+
+{% block bd %}
+<div class="locbar">
+    <span class="stat"></span>
+    <span class="addr"></span>
+    <span class="lat"></span>
+    <span class="lng"></span>
+</div>
+
+    {% if params.lat and params.lng %}
+<div class="stream {{ params.type }}"></div>
+<script>
+(function($){
+    var lat = parseFloat('{{ params.lat }}'),
+        lng = parseFloat('{{ params.lng }}');
+        
+    $('.pg-post_list[data-role=page]').one('pagecreate', function(evt){
+        sgz.stream.init('{{ params.type }}', {
+            'lat': lat, 
+            'lng': lng
+        });
+    });
+    
+    if(false === sgz.geo.initialized){
+        sgz.geo.lat = lat;
+        sgz.geo.lng = lng;
+    }
+    sgz.geo.start();
+})(jQuery);
+</script>
+    {% else %}
+<script>
+(function($){
+    // TODO: load user stream
+})(jQuery);
+</script>
+    {% endif %}
+{% endblock %}

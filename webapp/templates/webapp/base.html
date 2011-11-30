@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,
+                                   user-scalable=no" />
+    <meta name="language" content="zh_cn" />
+    <title>{% block title %}Stargazer{% endblock %}</title>
+    
+    <!--<base href="/w/" />-->
+    
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />
+    <!--<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}common/c/reset.css?r=0.1.2" />-->
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}webapp/c/common.css?r=0.1.0" />
+    
+    {% if debug %}    
+    <script src="{{ STATIC_URL }}common/s/jquery-1.6.4.min.js"></script>
+    <script src="{{ STATIC_URL }}common/s/jquery.mobile-1.0.min.js"></script>
+    {% else %}    
+    <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
+    {% endif %}
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}pyrcp/s/django.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}webapp/s/common.js?r=0.1.0"></script>
+</head>
+
+<body>{% csrf_token %}
+    <div class="pg-{% block page_class %}{% endblock %}" data-role="page">
+        <div data-role="header">
+            <div class="logogroup">{% block logo %}<a class="logo" href="/w/">SGZ</a><span class="logo_sp">&lt;</span><h1 class="page_title">{% block page_title %}{% endblock %}</h1>{% endblock %}</div>
+            {% block hd_buttons %}<a class="loclink ui-btn-right" href="/w/post/create/" data-icon="plus">Post</a>{% endblock %}
+        </div>
+        <div data-role="content">{% block bd %}{% endblock %}</div>
+    </div>
+</body>
+</html>

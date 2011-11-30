@@ -22,6 +22,10 @@ ADMINS = (
     ('snowhs', 'snow@firebloom.cc'),
 )
 
+INTERNAL_IPS = (
+    '127.0.0.1',
+)
+
 EMAIL_SUBJECT_PREFIX = '[SGZ] '
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -143,6 +147,7 @@ INSTALLED_APPS = (
     'django_pyrcp',
     'core',
     'api',
+    'webapp',
     'demo',
     'eva',
 )

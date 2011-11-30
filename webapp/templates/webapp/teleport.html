@@ -1,0 +1,76 @@
+{% extends 'webapp/base.html' %}
+
+{% block title %}Teleport{% endblock %}
+{% block page_title %}Teleport{% endblock %}
+{% block page_class %}teleport{% endblock %}
+{% block hd_buttons %}{% endblock %}
+
+{% block bd %}
+<div class="locbar">
+  <span class="stat"></span>
+  <span class="addr">{{ request.GET.addr }}</span>
+  <span class="lat">{{ request.GET.lat }}</span>
+  <span class="lng">{{ request.GET.lng }}</span>
+</div>
+<div class="map_container">
+    <div class="map"></div>
+    <div class="overlay"></div>
+</div>
+<a class="go loclink" href="{{ request.GET.to }}">Teleport!</a>
+<script>
+(function($){
+    var j_map_container = $('.map_container'),
+        j_map = j_map_container.find('.map'),
+        j_overlay = j_map_container.find('.overlay'),
+        gmap;
+
+    function load_map(lat, lng, addr){
+        gmap = new google.maps.Map(j_map.get(0), {
+            zoom: 13,
+            center: new google.maps.LatLng(lat, lng),
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            disableDefaultUI: true,
+            zoomControl: true,
+            zoomControlOptions: {
+                position: google.maps.ControlPosition.LEFT_BOTTOM,
+                style: google.maps.ZoomControlStyle.SMALL
+            }
+        });
+
+        google.maps.event.addListener(gmap, 'dragend', function(e){
+            var center = gmap.center;
+                lat = sgz.geo.trunk_latlng(center.lat()),
+                lng = sgz.geo.trunk_latlng(center.lng());
+                
+            pyrcp.j_doc.trigger(sgz.geo.E_ADDR_START, [lat, lng]);
+        });
+    }
+
+    $('.pg-teleport[data-role=page]').one('pageshow', function(evt){
+        var height;
+        if(-1 < navigator.userAgent.indexOf('Android')){
+            height = screen.availHeight - 50;
+        } else if(-1 < navigator.userAgent.indexOf('iPhone')){
+            height = screen.availHeight - 150;
+        } else {
+            height = screen.availHeight - 200;
+        }
+    
+        j_map_container.height(height);
+        j_overlay.css({
+            'top': (j_map_container.height() / 2 - j_overlay.height() / 2),
+            'left': (j_map_container.width() / 2 - j_overlay.width() / 2)
+        });
+        
+        pyrcp.j_doc.one(sgz.geo.E_LATLNG_DONE, function(evt, lat, lng, addr){
+            load_map(lat, lng, addr);
+        });
+        
+        sgz.geo.start({
+            'enableHighAccuracy': false,
+            'maximumAge': 99999
+        });
+    });
+})(jQuery);
+</script>
+{% endblock %}

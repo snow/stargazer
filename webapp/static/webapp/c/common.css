@@ -1,0 +1,91 @@
+@CHARSET "UTF-8";
+/*
+ * utils
+ * ----------------
+ */
+.c {clear:both}
+
+/*
+ * components
+ * ----------------
+ */
+/*
+ * header
+ */
+.logogroup .logo,
+.logogroup .logo_sp,
+.logogroup h1 {float:left; margin: 0.6em 0 0.8em 8px; padding: 0; 
+    min-height: 1.1em; font-size: 16px; outline: 0 none !important; 
+    overflow: hidden; text-overflow: ellipsis}
+
+.logogroup .logo,
+.logogroup .logo_sp {color:#ccc !important}
+
+.logogroup .logo {text-decoration:none}
+.logogroup h1 {margin-right: 90px}
+
+/*
+ * locbar
+ */
+.locbar .lat,
+.locbar .lng {display:none}
+.locbar .teleport {float:right; text-decoration:none}
+
+/*
+ * stream
+ */
+.stream-item {position:relative; border-top:1px solid #eee; padding:0 0 10px 55px}
+    .stream-item.simple {padding:10px}
+
+    .stream-item .avatar {position:absolute; top:0; left:0}
+
+    .stream-item .username {margin-bottom:5px; height:30px; line-height:30px; font-weight:bold}
+        .stream-item .username a {color:#000; text-decoration:none}
+
+    .stream-item .like,
+    .stream-item .ban {display:block; float:right; padding:0 10px 0 33px;
+      height:28px; line-height:28px; text-align:right; color:#666;
+      text-decoration:none; background:#eee; background-position:8px center;
+      background-repeat:no-repeat}
+    .stream-item .like {background-image:url(/s/demo/i/heart-unselected-16.png)}
+      .stream-item.on .like {background-image:url(/s/demo/i/heart-selected-16.png);
+        background-color:#ddd}
+    .stream-item .ban {background-image:url(/s/demo/i/del-16.png); border-left:1px dashed #ccc}
+
+    .stream-item .content,
+    .stream-item .addr,
+    .stream-item .meta {margin:3px 10px 0 0 }
+
+    .stream-item .addr {color:#666}
+    .stream-item .meta {color:#999}
+
+    .stream-item .soundplayer {float:left; padding:0 12px 0 40px; height:32px;
+      line-height:32px; color:#333;
+      background:#eee url(/s/demo/i/sound.png) no-repeat 8px center}
+      .stream-item .soundplayer .play {margin-left:5px; color:#333; text-decoration:none}
+
+/*
+ * page specifics
+ * ----------------
+ */
+/*
+ * index
+ */
+.pg-index figure {text-align:center}
+.pg-index [rel=section] {text-decoration:none}
+
+/*
+ * teleport
+ */
+.pg-teleport .ui-content {padding:0}
+.pg-teleport .map_container {position:relative; height:350px}
+.pg-teleport .map {height:100%}
+.pg-teleport .overlay {position:absolute; top:50%; left:50%; width:16px; 
+    height:16px; background:url(/s/demo/i/cross-16.png)}
+.pg-teleport .go {display:block; height:36px; line-height:36px; font-size:large; 
+    text-align:center; background:#ddd}
+    
+/*
+ * post list
+ */    
+.pg-post_list .ui-content {padding:0}

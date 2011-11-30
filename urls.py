@@ -12,9 +12,9 @@ urlpatterns = patterns('',
     # on the top for better performance
     url(r'^utils/latlng2addr/$', LatLng2AddrView.as_view()),
     
-    url(r'^', include('demo.urls')),
-    
     url(r'^api/', include('api.urls')),
+    
+    url(r'^w/', include('webapp.urls')),
     
     url(r'^eva/', include('eva.urls')),
     
@@ -30,6 +30,8 @@ urlpatterns = patterns('',
         login_required(AuthorizeReturnV.as_view())),
     url(r'^thirdparty/twitter/authorize_done/$', 
         login_required(AuthorizeDoneV.as_view())),
+                       
+    url(r'^', include('demo.urls')),
     #url(r'^thirdparty/twitter/signout/$', login_required(SignoutV.as_view())),
     
 #    url(r'^thirdparty/twitter/authenticate/$', 
