@@ -3,6 +3,7 @@ import hashlib
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.forms import ModelForm, Textarea, HiddenInput
 
 from pyrcp import geo
 
@@ -122,8 +123,7 @@ class PostManager(models.Manager):
                                 filter(longitude__gte=lng-lng_offset).
                                 filter(longitude__lte=lng+lng_offset))
         return self
-
-
+    
 class Post(models.Model):
     '''A post'''
     SCENARIO_DEFAULT = 0
@@ -169,3 +169,15 @@ class Post(models.Model):
         '''TODO'''
         return Post.current_user and \
             self.likes.filter(id=Post.current_user.id).exists()
+            
+class CreatePostForm(ModelForm):
+    '''Form for users to create new post'''
+    class Meta:
+        model = Post
+        fields = ('content', 'latitude', 'longitude', 'address')
+        widgets = {
+            'content': Textarea(),
+            'latitude': HiddenInput(),
+            'longitude': HiddenInput(),
+            'address': HiddenInput()
+        }            

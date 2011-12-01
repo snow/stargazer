@@ -34,23 +34,26 @@
 /*
  * stream
  */
-.stream-item {position:relative; border-top:1px solid #eee; padding:0 0 10px 55px}
+.stream-item {position:relative; border-top:1px solid #eee; 
+              padding:0 0 10px 55px}
     .stream-item.simple {padding:10px}
 
     .stream-item .avatar {position:absolute; top:0; left:0}
 
-    .stream-item .username {margin-bottom:5px; height:30px; line-height:30px; font-weight:bold}
+    .stream-item .username {margin-bottom:5px; height:30px; line-height:30px; 
+        font-weight:bold}
         .stream-item .username a {color:#000; text-decoration:none}
 
     .stream-item .like,
     .stream-item .ban {display:block; float:right; padding:0 10px 0 33px;
-      height:28px; line-height:28px; text-align:right; color:#666;
-      text-decoration:none; background:#eee; background-position:8px center;
-      background-repeat:no-repeat}
-    .stream-item .like {background-image:url(/s/demo/i/heart-unselected-16.png)}
-      .stream-item.on .like {background-image:url(/s/demo/i/heart-selected-16.png);
-        background-color:#ddd}
-    .stream-item .ban {background-image:url(/s/demo/i/del-16.png); border-left:1px dashed #ccc}
+        height:28px; line-height:28px; text-align:right; color:#666;
+        text-decoration:none; background:#eee; background-position:8px center;
+        background-repeat:no-repeat}
+    .stream-item .like {background-image:url(/s/common/i/heart-unselected-16.png)}
+        .stream-item.on .like {background-image:url(/s/common/i/heart-selected-16.png);
+                               background-color:#ddd}
+    .stream-item .ban {background-image:url(/s/common/i/del-16.png); 
+        border-left:1px dashed #ccc}
 
     .stream-item .content,
     .stream-item .addr,
@@ -60,9 +63,10 @@
     .stream-item .meta {color:#999}
 
     .stream-item .soundplayer {float:left; padding:0 12px 0 40px; height:32px;
-      line-height:32px; color:#333;
-      background:#eee url(/s/demo/i/sound.png) no-repeat 8px center}
-      .stream-item .soundplayer .play {margin-left:5px; color:#333; text-decoration:none}
+        line-height:32px; color:#333; 
+        background:#eee url(/s/common/i/sound.png) no-repeat 8px center}
+        .stream-item .soundplayer .play {margin-left:5px; color:#333; 
+            text-decoration:none}
 
 /*
  * page specifics
@@ -89,3 +93,9 @@
  * post list
  */    
 .pg-post_list .ui-content {padding:0}
+
+/*
+ * post create
+ */
+.pg-post_create .hidden_post_form .ui-btn {position:absolute; right:10px; top:0.4em}
+.shown_post_form.new textarea {color:#999}

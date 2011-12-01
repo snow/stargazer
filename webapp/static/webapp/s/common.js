@@ -138,19 +138,15 @@
     // round lattidue or longitude to given decimal point
     // defaults to 7
     // e.g. safari has 8
-    sgz.geo.trunk_latlng = function(str, accuracy){
-        var str = str.toString(),
-            pidx = str.indexOf('.');
-            
+    sgz.geo.trunk_latlng = function(value, accuracy){
         if('undefined' === typeof accuracy){
             accuracy = 7;
-        }    
-
-        if(-1 === pidx){
-            return str;
-        } else {
-            return str.substr(0, pidx+accuracy+1);
         }
+        
+        var value = parseFloat(value),
+            i = Math.pow(10, accuracy);
+
+        return Math.round(value * i) / i;
     };
     
     // recieve address in callback function by given latlng
@@ -192,13 +188,12 @@
     
             try {
                 params = $.deparam(ar[1]);
+                params.lat && (params.lat = lat);
+                params.lng && (params.lng = lng);
+                params.addr && (params.addr = addr);
             } catch (e) {
                 params = {};
             }
-    
-            params.lat = lat;
-            params.lng = lng;
-            params.addr = addr;
     
             return path + '?' + $.param(params);
         }

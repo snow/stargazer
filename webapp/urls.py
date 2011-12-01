@@ -9,13 +9,16 @@ from webapp.views import *
 
 urlpatterns = patterns('',
     url(r'^$', IndexV.as_view()),
-    url(r'^post/(?P<type>recent|top|trending)/$', ListV.as_view()),
+    
     url(r'^posts/nearby/(?P<type>recent|top|trending)/$', ListV.as_view()),
     url(r'^posts/lat(?P<lat>\d+\.?\d*)/lng(?P<lng>\d+\.?\d*)/'+\
         '(?P<type>recent|top|trending)/$', ListV.as_view()),
+                       
+    url(r'^posts/create/$', login_required(CreateV.as_view())),                   
+                       
     url(r'^teleport/$', TeleportV.as_view()),
 
-#    url(r'^post/create/$', login_required(CreatePostView.as_view())),
+    
 
 #    url(r'^post/load/recent/', RecentPostListView.as_view()),
 #    url(r'^post/load/by_user/(?P<id>\d+)/', UserPostListView.as_view()),

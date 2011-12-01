@@ -1,10 +1,10 @@
 # Create your views here.
 import json
 
-from django.views.generic import View, ListView
+from django.views.generic import View, ListView, CreateView
 from django.http import HttpResponse
 
-from core.models import Post
+from core.models import Post, CreatePostForm, Author
 
 class ListV(ListView):
     '''Return posts by geo'''
@@ -43,8 +43,33 @@ class ListByUserV(View):
 class ShowV(View):
     '''Return properties of a post'''  
     
-class CreateV(View):
+class CreateV(CreateView):
     '''Create a post'''
+    form_class = CreatePostForm
+    #template_name = 'demo/post/create.html'
+
+    def form_valid(self, form):
+        post = form.instance
+        user = self.request.user
+        
+        try:
+            author = user.author_set.filter(source=Author.T_LOCAL).get()
+        except user.DoesNotExist:
+            author = Author(name=user.username, source=Author.T_LOCAL,
+                            owner=user)
+            author.save()
+
+        post.author = author
+        
+        if self.request.POST['return']:
+            self.success_url = self.request.POST['return']+\
+                'lat%(latitude)s/lng%(longitude)s/recent/'
+
+        return super(CreateView, self).form_valid(form)
+    
+    def form_invalid(self, form):
+        '''TODO'''
+        raise
     
 class LikeV(View):
     '''Toggle "like" of a post'''
