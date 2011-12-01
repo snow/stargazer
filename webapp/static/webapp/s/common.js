@@ -25,10 +25,14 @@
         }).delegate('.stream-item .like', 'click', function() {
             sgz.stream.like(this);
         });
-
-        var uri = '/post/load/'+type+'/';
-        if(params.id){
-            uri += params.id + '/';
+        
+        var uri = '/api/posts';
+        if(params.lat && params.lng){
+            uri += '/lat'+params.lat+'/lng'+params.lng+'/'+type+'.html';
+            delete params.lat;
+            delete params.lng;
+        } else if(params.id){
+            uri += '/by/' + params.id + '/';
             delete params.id
         }
 
@@ -49,8 +53,7 @@
         var j_stream_item = $(anchor).closest('.stream-item'),
             id = j_stream_item.attr('sid');
 
-        return pyrcp.post('/post/ban/',{
-            'data': {'id': id},
+        return pyrcp.post('/api/posts/ban/'+id+'/', {
             'success': function(data){
                 j_stream_item.hide('fast', function() {
                     $(this).remove();
@@ -71,8 +74,7 @@
             cur_like_cnt = 0;
         }
 
-        return pyrcp.post('/post/like/', {
-            'data': {'id': id},
+        return pyrcp.post('/api/posts/like/'+id+'/', {
             'success': function(data){
                 if(j_stream_item.hasClass('on')) {
                     j_anchor.text(Math.max(0, cur_like_cnt-1));
