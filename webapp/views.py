@@ -1,5 +1,5 @@
 # Create your views here.
-from django.views.generic import View, TemplateView, RedirectView
+from django.views.generic import View, TemplateView
 
 from core.models import CreatePostForm
 
@@ -19,4 +19,8 @@ class CreateV(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         context['form'] = CreatePostForm()
-        return self.render_to_response(context)    
+        return self.render_to_response(context)
+    
+class SigninV(TemplateView):  
+    '''Render a signin form which post to api'''
+    template_name = 'webapp/signin.html'

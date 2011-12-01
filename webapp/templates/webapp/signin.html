@@ -1,0 +1,73 @@
+{% extends 'core/base.html' %}
+{% load url from future %}
+
+{% block title %}Signin{% endblock %}
+{% block page_title %}Signin{% endblock %}
+{% block page_class %}signin{% endblock %}
+{% block hd_buttons %}<a class="submit ui-btn-right" data-theme="b" data-icon="check" tabindex="2" href="javascript:void(0)">Signin</a>{% endblock %}
+
+{% block bd %}
+
+{% if form.errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+
+<form class="signinform" method="post" data-ajax="false" action="/api/accounts/signin.json">
+    <div class="li">
+        <input type="text" name="username" placeholder="username" tabindex="0" required="required" />
+    </div>
+    
+    <div class="li">
+        <input type="password" name="password" placeholder="password" tabindex="1" required="required" />
+    </div>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.GET.next }}" />
+</form>
+
+Don't have an account? <a href="/accounts/signup?next={{ request.GET.next }}" tabindex="3">Signup</a>
+<script>
+(function($){
+    var j_page = $('.pg-signin'),
+        j_form = j_page.find('.signinform'),
+        j_submit = j_page.find('.submit'),
+        j_nonfield_errors = j_form.find('.errls');
+        //TODO make these codes reuseable and move to common.js
+        j_submit.click(function(evt){
+            pyrcp.post(j_form.attr('action'), {
+                data: j_form.serialize(),
+                success: function(data){
+                    $.mobile.changePage(data.go_to);
+                },
+                error: function(jqXHR){
+                    try{
+                        data = $.parseJSON(jqXHR.responseText);
+                        j_form.find('.errls').empty();
+                        $.each(data.errors, function(key, errors){
+                            if('__all__' === key){
+                                var errls = j_nonfield_errors;
+                                if(0 === errls.length){
+                                    errls = $('<ul class="errls"/>').
+                                                            prependTo(j_form);
+                                }
+                            } else {
+                                var errls = j_form.find('.errls.'+key);
+                                if(0 === errls.length){
+                                    errls = $('<ul class="errls '+key+'" />').
+                                        insertBefore(
+                                            j_form.find('[name='+key+']'));
+                                }
+                            }        
+                             
+                            $.each(errors, function(idx, err){
+                                errls.append('<li>'+err+'</li>');
+                            });
+                        });
+                    } catch(err) {
+                        console.log(err);
+                    }
+                }
+            });
+        });
+})(jQuery);
+</script>
+{% endblock %}

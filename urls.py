@@ -1,16 +1,17 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import login_required
 
-from core.views import LatLng2AddrView
+#from core.views import LatLng2AddrView
 from thirdparty.twitter.views import *
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
+from core.views import SigninV
+
 urlpatterns = patterns('',
-    # on the top for better performance
-    url(r'^utils/latlng2addr/$', LatLng2AddrView.as_view()),
     
     url(r'^api/', include('api.urls')),
     
@@ -18,7 +19,7 @@ urlpatterns = patterns('',
     
     url(r'^eva/', include('eva.urls')),
     
-    url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
+    url(r'^accounts/login/$', SigninV.as_view()),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout',
         {'next_page': '/'}),
 

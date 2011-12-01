@@ -99,3 +99,9 @@
  */
 .pg-post_create .hidden_post_form .ui-btn {position:absolute; right:10px; top:0.4em}
 .shown_post_form.new textarea {color:#999}
+
+/*
+ * signin
+ */
+.signinform {margin-bottom:20px; border-bottom:1px solid #666}
+.signinform .li {margin-bottom:20px}

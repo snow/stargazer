@@ -17,8 +17,8 @@ urlpatterns = patterns('',
     url(r'^posts/create/$', login_required(CreateV.as_view())),                   
                        
     url(r'^teleport/$', TeleportV.as_view()),
-
     
+    url(r'^signin/$', SigninV.as_view()),
 
 #    url(r'^post/load/recent/', RecentPostListView.as_view()),
 #    url(r'^post/load/by_user/(?P<id>\d+)/', UserPostListView.as_view()),

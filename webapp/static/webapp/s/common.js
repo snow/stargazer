@@ -101,7 +101,7 @@
         FAILED_ADDRESSING_MSG = '获取地址失败 /. .\\',
         FALLBACK_ADDR = '一个神秘的地方',
 
-        LATLNG_TO_ADDR_API = '/utils/latlng2addr/';
+        LATLNG_TO_ADDR_API = '/api/utils/ll2a/';
 
     sgz.geo = {
         initialized: false,
