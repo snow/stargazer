@@ -4,8 +4,8 @@
 {% block page_title %}发帖{% endblock %}
 {% block page_class %}post_create{% endblock %}
 {% block hd_buttons %}
-<form action="/api/posts/create/" class="hidden_post_form locform{% if not form.is_bound %} new{% endif %}" data-ajax="false" method="POST">
-    {% csrf_token %}
+<form action="/api/posts/create.json" data-ajax="false" method="POST"
+    class="hidden_post_form locform{% if not form.is_bound %} new{% endif %}">
     <input type="hidden" name="content" />
     <input type="hidden" name="latitude" />
     <input type="hidden" name="longitude" />
@@ -16,7 +16,8 @@
 {% endblock %}
 
 {% block bd %}
-<form action="/api/posts/create/" class="shown_post_form {% if not form.is_bound %} new{% endif %}" method="POST">
+<form action="/api/posts/create/" method="POST"
+    class="shown_post_form {% if not form.is_bound %} new{% endif %}">
     <textarea name="content">{% if not form.is_bound %}What's on your mind?{% endif %}</textarea>
 </form>
 <div class="locbar">
@@ -62,6 +63,20 @@
             }
         });
         sgz.geo.start();
+        
+        j_hidden_form.submit(function(evt){
+            evt.preventDefault();
+            
+            pyrcp.post(j_hidden_form.attr('action'), {
+                data: j_hidden_form.serialize(),
+                success: function(data){
+                    $.mobile.changePage(data.go_to);
+                },
+                fail: function(data){
+                    //TODO
+                }
+            });
+        });
     });
     
     j_page.bind('pageshow', function(){

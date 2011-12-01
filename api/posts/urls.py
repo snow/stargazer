@@ -11,5 +11,5 @@ urlpatterns = patterns('',
     url(r'^like/(?P<id>\d+)/$', login_required(LikeV.as_view())),
     url(r'^ban/(?P<id>\d+)/$', login_required(BanV.as_view())),
     
-    url(r'^create/$', login_required(CreateV.as_view())),
+    url(r'^create.(?P<format>json|html)$', login_required(CreateV.as_view())),
 )

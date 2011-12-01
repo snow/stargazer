@@ -60,12 +60,18 @@ class CreateV(CreateView):
             author.save()
 
         post.author = author
+        post.save()
         
         if self.request.POST['return']:
-            self.success_url = self.request.POST['return']+\
-                'lat%(latitude)s/lng%(longitude)s/recent/'
-
-        return super(CreateView, self).form_valid(form)
+            success_url = self.request.POST['return'] + 'lat{}/lng{}/recent/'
+                
+        return HttpResponse(json.dumps({
+                                'done': True,
+                                'post_id': post.id,
+                                'go_to': success_url.format(post.latitude, 
+                                                            post.longitude)
+                            }),
+                            content_type='application/json')
     
     def form_invalid(self, form):
         '''TODO'''
