@@ -1,7 +1,7 @@
 {% for e in object_list %}
 <div class="li stream-item {% if e.is_liked %}on{% endif %}" sid="{{ e.id }}">
-  <a class="ban" href="javascript:void(0)">{{ e.bans.count }}</a>
-  <a class="like" href="javascript:void(0)">{{ e.likes.count }}</a>
+  <a class="ban" data-ajax="false" href="javascript:void(0)">{{ e.bans.count }}</a>
+  <a class="like" data-ajax="false" href="javascript:void(0)">{{ e.likes.count }}</a>
   <a href="/user/{{ e.author.id }}/"><img class="avatar" src="{{ e.author.gavatar_uri }}" alt="" /></a>
   <div class="username"><a href="/user/{{ e.author.id }}/">{{ e.author.name }}</a></div>
   <div class="content">{{ e.content }}</div>   

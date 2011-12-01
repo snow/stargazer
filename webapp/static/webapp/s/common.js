@@ -427,6 +427,24 @@
         });
     }
 })(jQuery);
+/**
+ * handle login_required links
+ * -----------------------------
+ */
+(function($){
+    function do_login_required_link(evt){
+        evt.preventDefault();
+        var href = $(evt.currentTarget).attr('href');
+        if(sgz.is_signedin){
+            $.mobile.changePage(href);
+        } else {
+            $.mobile.changePage('/w/signin/?next='+href);
+        }
+    }
+    
+    pyrcp.j_doc.delegate('a.login_required[data-ajax=false]', 'click', 
+                         do_login_required_link);
+})(jQuery);
 
 /**
  * log the entry page
