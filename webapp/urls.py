@@ -19,6 +19,7 @@ urlpatterns = patterns('',
     url(r'^teleport/$', TeleportV.as_view()),
     
     url(r'^signin/$', SigninV.as_view()),
+    url(r'^signup/$', SignupV.as_view()),
 
 #    url(r'^post/load/recent/', RecentPostListView.as_view()),
 #    url(r'^post/load/by_user/(?P<id>\d+)/', UserPostListView.as_view()),

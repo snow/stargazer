@@ -9,7 +9,7 @@ from thirdparty.twitter.views import *
 # from django.contrib import admin
 # admin.autodiscover()
 
-from core.views import SigninV
+from core.views import SigninV, SignupV
 
 urlpatterns = patterns('',
     
@@ -22,6 +22,7 @@ urlpatterns = patterns('',
     url(r'^accounts/login/$', SigninV.as_view()),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout',
         {'next_page': '/'}),
+    url(r'^accounts/signup/$', SignupV.as_view()),
 
     url(r'^thirdparty/twitter/$', IndexV.as_view()),
     

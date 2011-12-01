@@ -24,3 +24,7 @@ class CreateV(TemplateView):
 class SigninV(TemplateView):  
     '''Render a signin form which post to api'''
     template_name = 'webapp/signin.html'
+    
+class SignupV(TemplateView):  
+    '''Render a signup form which post to api'''
+    template_name = 'webapp/signup.html'    

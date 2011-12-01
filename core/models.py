@@ -2,8 +2,9 @@ import logging
 import hashlib
 
 from django.db import models
+from django.forms import ModelForm, Textarea, HiddenInput, RegexField
 from django.contrib.auth.models import User
-from django.forms import ModelForm, Textarea, HiddenInput
+from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 
 from pyrcp import geo
 
@@ -14,6 +15,25 @@ def _get_gavatar_uri(email):
     return 'http://www.gravatar.com/avatar/{}?s=48&d=monsterid'.\
             format(hashlib.md5(email.strip().lower()).hexdigest())
 
+
+class UserCreationForm(BaseUserCreationForm):
+    '''TODO'''
+    _USERNAME_HELP = 'Up to 15 char, digit, ".", "_", "-"'
+    
+    username = RegexField(label="Username", max_length=15,
+        regex=r'^[\w.-]+$', help_text=_USERNAME_HELP, initial=_USERNAME_HELP,
+        error_messages = {'invalid': _USERNAME_HELP})
+
+    def save(self, commit=True):
+        user = super(UserCreationForm, self).save(commit=False)
+        user.email = '{}@neverland.cc'.format(user.username)
+        if commit:
+            user.save()
+            profile = UserProfile(user=user)
+            profile.save()
+
+        return user
+    
 class UserProfile(models.Model):
     '''TODO'''
     user = models.ForeignKey(User, unique=True)

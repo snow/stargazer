@@ -54,7 +54,7 @@ class CreateV(CreateView):
         
         try:
             author = user.author_set.filter(source=Author.T_LOCAL).get()
-        except user.DoesNotExist:
+        except Author.DoesNotExist:
             author = Author(name=user.username, source=Author.T_LOCAL,
                             owner=user)
             author.save()

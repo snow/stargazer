@@ -67,7 +67,11 @@
         background:#eee url(/s/common/i/sound.png) no-repeat 8px center}
         .stream-item .soundplayer .play {margin-left:5px; color:#333; 
             text-decoration:none}
-
+/*
+ * forms
+ */
+form .row {margin-bottom:20px}
+form .virgin {color:#999}
 /*
  * page specifics
  * ----------------
@@ -101,7 +105,7 @@
 .shown_post_form.new textarea {color:#999}
 
 /*
- * signin
+ * signin & signup
  */
-.signinform {margin-bottom:20px; border-bottom:1px solid #666}
-.signinform .li {margin-bottom:20px}
+.pg-signin .hsp,
+.pg-signup .hsp {margin-top:25px; padding-top:15px; border-top:1px solid #999}

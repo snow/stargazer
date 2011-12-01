@@ -349,6 +349,84 @@
         }
     };
 })(jQuery);
+/**
+ * form helpers
+ * -----------------------------
+ */
+(function($){
+    sgz.forms = {};
+    
+    sgz.forms.S_TEXT = '[type=text],[type=password]';
+    
+    sgz.forms.init = function(j_form){
+        j_form.find(sgz.forms.S_TEXT).each(function(idx, el){
+            var j_t = $(el);
+            if('' === j_t.val()){
+                j_t.addClass('virgin');
+                if('password' !== j_t.attr('type')){
+                    j_t.val(j_t.attr('placeholder'));
+                }
+            } else if(j_t.val() === j_t.attr('placeholder')){
+                j_t.addClass('virgin');
+            }
+        });
+        
+        j_form.find('.virgin[type=text]').one('focus', function(evt){
+            $(this).select();
+        });
+        
+        j_form.find('.virgin').one('keyup', function(evt){
+            $(this).removeClass('virgin');
+        });
+    };
+    
+    sgz.forms.custom_submit = function(j_form){
+        j_form.submit(function(evt){
+            evt.preventDefault();
+            
+            pyrcp.post(j_form.attr('action'), {
+                data: j_form.serialize(),
+                success: function(data){
+                    if(data.go_to){
+                        $.mobile.changePage(data.go_to);
+                    } else {
+                        // TODO: non-redirect situations?
+                    }                    
+                },
+                error: function(jqXHR){
+                    try{
+                        data = $.parseJSON(jqXHR.responseText);
+                        j_form.find('.errls').empty();
+                        var errls;
+                        $.each(data.errors, function(key, errors){
+                            if('__all__' === key){
+                                errls = $('.errls.nonfield');
+                                if(0 === errls.length){
+                                    errls = $('<ul class="errls nonfield"/>').
+                                                            prependTo(j_form);
+                                }
+                            } else {
+                                errls = j_form.find('.errls.'+key);
+                                if(0 === errls.length){
+                                    errls = $('<ul class="errls '+key+'" />').
+                                        insertBefore(
+                                            j_form.find('[name='+key+']'));
+                                }
+                            }        
+                             
+                            $.each(errors, function(idx, err){
+                                errls.append('<li>'+err+'</li>');
+                            });
+                        });
+                    } catch(err) {
+                        //TODO what will extractly happen here?
+                        console && console.log(err);
+                    }
+                }
+            });
+        });
+    }
+})(jQuery);
 
 /**
  * log the entry page
@@ -363,6 +441,8 @@
         });
     });
 })(jQuery);
+
+
 
 jQuery(function($){
     // hide address bar on mobile browser

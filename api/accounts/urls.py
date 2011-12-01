@@ -5,4 +5,5 @@ from api.accounts.views import *
 
 urlpatterns = patterns('',
     url(r'^signin.(?P<format>json|html)$', SigninV.as_view()),
+    url(r'^signup.(?P<format>json|html)$', SignupV.as_view()),
 )

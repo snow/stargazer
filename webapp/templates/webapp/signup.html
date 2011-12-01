@@ -1,0 +1,36 @@
+{% extends 'webapp/base.html' %}
+
+{% block title %}Signup{% endblock %}
+{% block page_title %}Signup{% endblock %}
+{% block page_class %}signup{% endblock %}
+{% block hd_buttons %}
+<a class="ui-btn-right" data-theme="b" data-icon="arrow-r" data-iconpos="right" 
+    tabindex="4" href="/w/signin/?next={{ request.GET.next }}">Signin</a>
+{% endblock %}
+
+{% block bd %}
+<form class="signupform" action="/api/accounts/signup.json" data-ajax="false" method="POST">
+    <div class="row">
+        <input type="text" name="username" placeholder="username" required="required" />
+    </div>
+    <div class="row">
+        <input type="password" name="password1" placeholder="password" required="required" />
+    </div>
+    <div class="row">
+        <input type="password" name="password2" placeholder="type again" required="required" />
+    </div>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.GET.next }}" />
+    <button type="submit" data-theme="a" data-icon="check" tabindex="3">Signup</button>
+</form>
+
+<div class="hsp">Have an account? <a href="/w/signin/?next={{ request.GET.next }}">Signin</a></div>
+<script>
+(function($){
+    var j_form = $('.pg-signup .signupform');
+        
+    sgz.forms.init(j_form);
+    sgz.forms.custom_submit(j_form);
+})(jQuery);
+</script>
+{% endblock %}

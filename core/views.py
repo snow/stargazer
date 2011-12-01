@@ -16,3 +16,14 @@ class SigninV(View):
             return HttpResponseRedirect('/w/signin/?'+request.GET.urlencode())
         else:
             raise Exception('not yet implemented signin for non-mobile')
+        
+class SignupV(View):
+    '''Redirect mobile visitor to mobile signup'''
+    
+    def get(self, request, *args, **kwargs):
+        '''redirect to coresponding uri to show singin form'''
+        go_to = request.GET.get('next', '')
+        if go_to.startswith('/w/'):
+            return HttpResponseRedirect('/w/signup/?'+request.GET.urlencode())
+        else:
+            raise Exception('not yet implemented signup for non-mobile')        
