@@ -595,12 +595,22 @@
  */
 (function($){
     pyrcp.j_doc.one('pagecreate', function(evt){
-        var j_firstpg = $(evt.target);
-        $.each(j_firstpg.attr('class').split(' '), function(idx, el){
-            if('pg-' === el.substr(0, 3)){
-                sgz.entry_page = el;
-            }
-        });
+        var j_1stpg = $(evt.target);
+        if(j_1stpg.hasClass('pg-dashboard')){
+            var page_changed = false;
+            
+            pyrcp.j_doc.one('pagebeforechange', function(evt){
+                page_changed = true;
+            });
+            
+            pyrcp.j_doc.one(sgz.geo.E_LATLNG_DONE, function(evt, lat, lng, addr){
+                if(!page_changed){ 
+                    $.mobile.changePage($('.nearby[rel=section]').attr('href'));
+                }
+            });
+            
+            sgz.geo.start();
+        }
     });
 })(jQuery);
 

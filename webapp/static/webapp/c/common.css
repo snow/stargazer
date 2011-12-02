@@ -79,10 +79,9 @@ form .virgin {color:#999}
 /*
  * index
  */
-.pg-index dl {text-align:center}
-.pg-index a[rel=section] {text-decoration:none}
-.pg-index dt {font-size:x-large}
-.pg-index dd {margin:10px 0 0 0}
+.pg-dashboard a[rel=section] {text-decoration:none; text-align:center}
+    .pg-dashboard dt {font-size:x-large}
+    .pg-dashboard dd {margin:10px 0 0 0}
 
 /*
  * teleport

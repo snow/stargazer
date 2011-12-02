@@ -1,7 +1,7 @@
 {% extends 'webapp/base.html' %}
 
 {% block logo %}<h1>Stargazer</h1>{% endblock %}
-{% block page_class %}index{% endblock %}
+{% block page_class %}dashboard{% endblock %}
 
 {% block bd %}
 <div class="ui-grid-a">
@@ -30,17 +30,4 @@
         </dl>
     </a>
 </div>
-<script>
-(function($){
-    pyrcp.j_doc.one('pagecreate', function(){
-        if('pg-index' === sgz.entry_page){
-            pyrcp.j_doc.one(sgz.geo.E_LATLNG_DONE, function(evt, lat, lng, addr){
-                $.mobile.changePage($('.nearby[rel=section]').attr('href'));
-            });
-        }
-        
-        sgz.geo.start();
-    });
-})(jQuery);
-</script>
 {% endblock %}
