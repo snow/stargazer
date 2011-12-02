@@ -618,17 +618,11 @@
 
 jQuery(function($){
     // hide address bar on mobile browser
-    /*$(window).load(function(){
+    pyrcp.j_doc.bind('pageshow', function(){
         setTimeout(function(){
-            // not work on android builtin browser with (0, 1) first
+            // not work on android builtin browser without (0, 1) first
             window.scrollTo(0, 1);
             window.scrollTo(0, 0);
         }, 100);
     });
-
-    $('form').each(function(idx, el){
-        var j_form = $(el);
-        j_form.find('[type=text],[type=password], textarea').
-            width(j_form.width()-10);
-    });*/
 });
