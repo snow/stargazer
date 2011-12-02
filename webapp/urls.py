@@ -8,7 +8,8 @@ from webapp.views import *
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', IndexV.as_view()),
+    url(r'^$', InitV.as_view()),
+    url(r'^dashboard/$', DashboardV.as_view()),
     
     url(r'^posts/nearby/(?P<type>recent|top|trending)/$', ListV.as_view()),
     url(r'^posts/lat(?P<lat>\d+\.?\d*)/lng(?P<lng>\d+\.?\d*)/'+\

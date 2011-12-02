@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,
+                                   user-scalable=no" />
+    <meta name="language" content="zh_cn" />
+    <title>Stargazer</title>
+    <style>
+body {text-align:center}
+.indicator {display:inline-block; margin:0 auto; padding-left:20px; width:70px; 
+    background:url(/s/common/i/loading.gif) no-repeat left}
+    </style>
+</head>
+
+<body>
+    <h1>Stargazer</h1>
+    <div class="indicator">
+        loading...
+    </div>
+    
+    {% if debug %}    
+    <script src="{{ STATIC_URL }}common/s/jquery-1.6.4.min.js"></script>
+    <script src="{{ STATIC_URL }}common/s/jquery.mobile-1.0.min.js"></script>
+    {% else %}    
+    <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
+    {% endif %}
+    <script type="text/javascript" src="{{ STATIC_URL }}common/s/jquery.ba-bbq-1.2.1.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}pyrcp/s/django.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}webapp/s/common.js?r=0.1.0"></script>
+    
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}webapp/c/common.css?r=0.1.0" />
+    
+    <script>
+function go_dashboard(){
+    window.location = '/w/dashboard/';
+}
+
+pyrcp.j_doc.one(sgz.geo.E_LATLNG_DONE, go_dashboard);
+pyrcp.j_doc.one(sgz.geo.E_LATLNG_FAIL, go_dashboard);
+sgz.geo.start({
+    'enableHighAccuracy': true,
+    'maximumAge': 0
+});
+    </script>
+</body>
+</html>

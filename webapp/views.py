@@ -4,8 +4,11 @@ from django.contrib.auth.models import User
 
 from core.models import CreatePostForm
 
-class IndexV(TemplateView):
-    template_name = 'webapp/index.html'
+class DashboardV(TemplateView):
+    template_name = 'webapp/dashboard.html'
+    
+class InitV(TemplateView):
+    template_name = 'webapp/init.html'
     
 class ListV(TemplateView):
     template_name = 'webapp/list.html'

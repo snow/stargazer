@@ -120,7 +120,7 @@
 
     sgz.geo.def_options = {
         'enableHighAccuracy': true,
-        'maximumAge': 99999
+        'maximumAge': 30 * 60 * 1000 // 30min
     };
 
     sgz.geo.C_LOCBAR = 'locbar';

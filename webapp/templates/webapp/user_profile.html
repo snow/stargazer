@@ -5,7 +5,7 @@
 {% block page_class %}user_profile{% endblock %}
 {% block hd_buttons %}
     {% if request.user.is_authenticated and request.user.id == object.id %}
-<a class="ui-btn-right" data-icon="forward" href="/accounts/signout/?next=/w/">signout</a>
+<a class="ui-btn-right" data-icon="forward" href="/accounts/signout/?next=/w/dashboard/">signout</a>
     {% endif %}
 {% endblock %}
 
