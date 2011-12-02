@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import login_required
+from django.views.generic import RedirectView
 
 #from core.views import LatLng2AddrView
 from thirdparty.twitter.views import *
@@ -15,6 +16,7 @@ urlpatterns = patterns('',
     
     url(r'^api/', include('api.urls')),
     
+    url(r'^$', RedirectView.as_view(url='/w/', permanent=False)),
     url(r'^w/', include('webapp.urls')),
     
     url(r'^accounts/signin/$', SigninV.as_view()),
