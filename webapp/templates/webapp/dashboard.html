@@ -6,24 +6,28 @@
 {% block bd %}
 <div class="ui-grid-a">
     <a class="ui-block-a nearby loclink" rel="section" href="/w/posts/nearby/recent/">
-        <figure>
-            <img src="{{ STATIC_URL }}demo/i/ex/icon-globe-64.jpg" alt="Nearby" />
-            <figcaption><span class="label">Nearby</span></figcaption>
-        </figure>
+        <dl>
+            <dt>Nearby</dt>
+            <dd>See tweeets nearby</dd>
+        </dl>
     </a>
     
     <a class="ui-block-b" rel="section" href="/w/teleport/?to=/w/posts/nearby/recent/">
-        <figure>
-            <img src="{{ STATIC_URL }}demo/i/ex/icon-globe-64.jpg" alt="Teleport" />
-            <figcaption><span class="label">Teleport</span></figcaption>
-        </figure>
+        <dl>
+            <dt>Teleport</dt>
+            <dd>To anywhere on the earth</dd>
+        </dl>
     </a>
     
     <a class="ui-block-a login_required" data-ajax="false" rel="section" href="/w/me/">
-        <figure>
-            <img src="{{ STATIC_URL }}demo/i/ex/icon-globe-64.jpg" alt="Me" />
-            <figcaption><span class="label">Me</span></figcaption>
-        </figure>
+        <dl>
+            <dt>Me</dt>
+            {% if request.user.is_authenticated %}
+            <dd>User tweets</dd>
+            {% else %}
+            <dd>Signin / Signup to tweet and like/ban tweets</dd>
+            {% endif %}
+        </dl>
     </a>
 </div>
 <script>

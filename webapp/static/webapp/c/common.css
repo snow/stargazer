@@ -79,8 +79,10 @@ form .virgin {color:#999}
 /*
  * index
  */
-.pg-index figure {text-align:center}
-.pg-index [rel=section] {text-decoration:none}
+.pg-index dl {text-align:center}
+.pg-index a[rel=section] {text-decoration:none}
+.pg-index dt {font-size:x-large}
+.pg-index dd {margin-left:0}
 
 /*
  * teleport
