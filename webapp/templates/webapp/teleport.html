@@ -50,11 +50,11 @@
     $('.pg-teleport[data-role=page]').one('pageshow', function(evt){
         var height;
         if(-1 < navigator.userAgent.indexOf('Android')){
-            height = screen.availHeight - 20;
+            height = screen.availHeight - 30;
         } else if(-1 < navigator.userAgent.indexOf('iPhone')){
             height = screen.availHeight - 120;
         } else {
-            height = screen.availHeight - 140;
+            height = screen.availHeight - 150;
         }
     
         j_map_container.height(height);
