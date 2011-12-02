@@ -533,7 +533,7 @@
             container_height = 400;
             
         if(-1 < navigator.userAgent.indexOf('Android')){
-            container_height = screen.availHeight - hd_height;
+            container_height = screen.height - hd_height;
         } else if(-1 < navigator.userAgent.indexOf('iPhone')){
             container_height = screen.availHeight - 120;
         } else {
