@@ -13,34 +13,29 @@
 (function($) {
     sgz.stream = {}
 
-    var j_stream,
-        csrf;
-
-    sgz.stream.init = function(type, params){
-        csrf = $('[name=csrfmiddlewaretoken]').val();
-        j_stream = $('.pg-post_list .stream');
-
+    sgz.stream.init = function(j_stream, params){
+        var uri = '/api/posts/';
+        if(params.lat && params.lng){
+            uri += 'lat'+params.lat+'/lng'+params.lng+'/'+params.type+'.html';
+            delete params.lat;
+            delete params.lng;
+        } else if(params.id){
+            uri += 'by/' + params.id + '.html';
+            delete params.id
+        }
+        
+        j_stream.attr('content_uri', uri);
+        sgz.stream.load(j_stream, params);
+        
         j_stream.delegate('.stream-item .ban', 'click', function() {
             sgz.stream.ban(this);
         }).delegate('.stream-item .like', 'click', function() {
             sgz.stream.like(this);
         });
-        
-        var uri = '/api/posts';
-        if(params.lat && params.lng){
-            uri += '/lat'+params.lat+'/lng'+params.lng+'/'+type+'.html';
-            delete params.lat;
-            delete params.lng;
-        } else if(params.id){
-            uri += '/by/' + params.id + '/';
-            delete params.id
-        }
-
-        sgz.stream.load(uri, params);
     };
 
-    sgz.stream.load = function(CONTENT_URI, params){
-        $.ajax(CONTENT_URI, {
+    sgz.stream.load = function(j_stream, params){
+        $.ajax(j_stream.attr('content_uri'), {
             'type': 'GET',
             'data': params,
             'success': function(data){

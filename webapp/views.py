@@ -1,5 +1,6 @@
 # Create your views here.
-from django.views.generic import View, TemplateView
+from django.views.generic import View, TemplateView, DetailView, RedirectView
+from django.contrib.auth.models import User
 
 from core.models import CreatePostForm
 
@@ -27,4 +28,17 @@ class SigninV(TemplateView):
     
 class SignupV(TemplateView):  
     '''Render a signup form which post to api'''
-    template_name = 'webapp/signup.html'    
+    template_name = 'webapp/signup.html'
+    
+class MeV(RedirectView):
+    permanent = False
+    query_string = True
+
+    def get(self, request, *args, **kwargs):
+        self.url = '/w/user/{}/'.format(request.user.username)
+        return super(MeV, self).get(request, *args, **kwargs)
+
+class UserV(DetailView):
+    model = User
+    slug_field = 'username'
+    template_name = 'webapp/user_profile.html'    

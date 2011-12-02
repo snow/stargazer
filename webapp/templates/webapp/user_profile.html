@@ -1,0 +1,27 @@
+{% extends 'webapp/base.html' %}
+
+{% block title %}{{ object.username }}{% endblock %}
+{% block page_title %}{{ object.username }}{% endblock %}
+{% block page_class %}user_profile{% endblock %}
+{% block hd_buttons %}
+    {% if request.user.is_authenticated and request.user.id == object.id %}
+<a class="ui-btn-right" data-icon="forward" href="/accounts/signout/?next=/w/">signout</a>
+    {% endif %}
+{% endblock %}
+
+{% block bd %}
+<div class="info">
+    <img class="avatar" src="{{ object.get_profile.gavatar_uri }}" alt="" />
+    <div class="username">{{ object.username }}</div>
+    <div class="c"></div>
+</div>
+
+<div id="stream_to_init" class="stream by"></div>
+<script>
+(function($){
+    var j_stream = $('#stream_to_init').removeAttr('id');
+    
+    sgz.stream.init(j_stream, {'id': '{{ object.id }}'})
+})(jQuery);
+</script>
+{% endblock %}

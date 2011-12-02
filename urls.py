@@ -17,11 +17,8 @@ urlpatterns = patterns('',
     
     url(r'^w/', include('webapp.urls')),
     
-    url(r'^eva/', include('eva.urls')),
-    
-    url(r'^accounts/login/$', SigninV.as_view()),
-    url(r'^accounts/logout/$', 'django.contrib.auth.views.logout',
-        {'next_page': '/'}),
+    url(r'^accounts/signin/$', SigninV.as_view()),
+    url(r'^accounts/signout/$', 'django.contrib.auth.views.logout'),
     url(r'^accounts/signup/$', SignupV.as_view()),
 
     url(r'^thirdparty/twitter/$', IndexV.as_view()),
@@ -33,7 +30,9 @@ urlpatterns = patterns('',
     url(r'^thirdparty/twitter/authorize_done/$', 
         login_required(AuthorizeDoneV.as_view())),
                        
-    url(r'^', include('demo.urls')),
+    url(r'^eva/', include('eva.urls')),
+                       
+    #url(r'^', include('demo.urls')),
     #url(r'^thirdparty/twitter/signout/$', login_required(SignoutV.as_view())),
     
 #    url(r'^thirdparty/twitter/authenticate/$', 

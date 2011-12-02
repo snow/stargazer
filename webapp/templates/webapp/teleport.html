@@ -3,7 +3,9 @@
 {% block title %}Teleport{% endblock %}
 {% block page_title %}Teleport{% endblock %}
 {% block page_class %}teleport{% endblock %}
-{% block hd_buttons %}{% endblock %}
+{% block hd_buttons %}
+<a class="ui-btn-right loclink" data-theme="b" data-iconpos="right" data-icon="arrow-r" href="{{ request.GET.to }}">Teleport</a>
+{% endblock %}
 
 {% block bd %}
 <div class="locbar">
@@ -16,7 +18,6 @@
     <div class="map"></div>
     <div class="overlay"></div>
 </div>
-<a class="go loclink" href="{{ request.GET.to }}">Teleport!</a>
 <script>
 (function($){
     var j_map_container = $('.map_container'),
@@ -49,11 +50,11 @@
     $('.pg-teleport[data-role=page]').one('pageshow', function(evt){
         var height;
         if(-1 < navigator.userAgent.indexOf('Android')){
-            height = screen.availHeight - 50;
+            height = screen.availHeight - 20;
         } else if(-1 < navigator.userAgent.indexOf('iPhone')){
-            height = screen.availHeight - 150;
+            height = screen.availHeight - 120;
         } else {
-            height = screen.availHeight - 200;
+            height = screen.availHeight - 140;
         }
     
         j_map_container.height(height);

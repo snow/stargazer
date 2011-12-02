@@ -36,9 +36,25 @@ class ListV(ListView):
             pass
         
 
-class ListByUserV(View):
+class ListByUserV(ListView):
     '''Return posts by user'''
-    
+    template_name = 'api/posts/stream_content_simple.html'
+
+    def get(self, request, id, format, *args, **kwargs):
+        self.queryset = Post.objects.by_user(id).recent().all()
+        
+        if 'json' == format:
+            pass
+#            return HttpResponse(json.dumps({
+#                                    'results': True
+#                                }),
+#                                content_type='application/json')
+        elif 'html' == format:
+            return super(ListByUserV, self).get(request, *args, **kwargs)
+        else:
+            # raise exception?
+            pass
+        
     
 class ShowV(View):
     '''Return properties of a post'''  

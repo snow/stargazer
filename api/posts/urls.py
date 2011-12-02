@@ -7,6 +7,8 @@ urlpatterns = patterns('',
     url(r'^lat(?P<lat>\d+\.?\d*)/lng(?P<lng>\d+\.?\d*)/'+\
             '(?P<type>recent|top|trending).(?P<format>json|html)$', 
         ListV.as_view()),
+    url(r'^by/(?P<id>\d+).(?P<format>json|html)$', ListByUserV.as_view()),                   
+        
                        
     url(r'^like/(?P<id>\d+)/$', login_required(LikeV.as_view())),
     url(r'^ban/(?P<id>\d+)/$', login_required(BanV.as_view())),

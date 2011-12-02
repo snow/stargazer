@@ -90,8 +90,6 @@ form .virgin {color:#999}
 .pg-teleport .map {height:100%}
 .pg-teleport .overlay {position:absolute; top:50%; left:50%; width:16px; 
     height:16px; background:url(/s/demo/i/cross-16.png)}
-.pg-teleport .go {display:block; height:36px; line-height:36px; font-size:large; 
-    text-align:center; background:#ddd}
     
 /*
  * post list
@@ -109,3 +107,11 @@ form .virgin {color:#999}
  */
 .pg-signin .hsp,
 .pg-signup .hsp {margin-top:25px; padding-top:15px; border-top:1px solid #999}
+
+/*
+ * user profile
+ */
+.pg-user_profile .ui-content {padding:0}
+.pg-user_profile .info {padding:10px 10px 10px 65px}
+.pg-user_profile .info .avatar {float:left; margin-left:-55px}
+.pg-user_profile .username {font-size:large}

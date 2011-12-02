@@ -7,6 +7,7 @@ TEMPLATE_DEBUG = DEBUG
 PROJECT_ROOT = dirname(abspath(__file__))
 PROJECT_NAME = PROJECT_ROOT.split('/')[-1]
 AUTH_PROFILE_MODULE = 'core.UserProfile'
+LOGIN_URL = '/accounts/signin/'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',

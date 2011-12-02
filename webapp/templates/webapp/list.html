@@ -12,17 +12,19 @@
     <span class="lng"></span>
 </div>
 
+<div id="stream_to_init" class="stream {{ params.type }}"></div>
     {% if params.lat and params.lng %}
-<div class="stream {{ params.type }}"></div>
 <script>
 (function($){
     var lat = parseFloat('{{ params.lat }}'),
-        lng = parseFloat('{{ params.lng }}');
+        lng = parseFloat('{{ params.lng }}'),
+        j_stream = $('#stream_to_init').removeAttr('id');
         
     $('.pg-post_list[data-role=page]').one('pagecreate', function(evt){
-        sgz.stream.init('{{ params.type }}', {
+        sgz.stream.init(j_stream, {
             'lat': lat, 
-            'lng': lng
+            'lng': lng,
+            'type': '{{ params.type }}'
         });
     });
     
@@ -36,7 +38,17 @@
     {% else %}
 <script>
 (function($){
-    // TODO: load user stream
+    var j_stream = $('#stream_to_init').removeAttr('id');
+    
+    pyrcp.j_doc.bind(sgz.geo.E_LATLNG_DONE, function(evt, lat, lng, addr){
+        sgz.stream.init(j_stream, {
+            'lat': lat, 
+            'lng': lng,
+            'type': '{{ params.type }}'
+        });
+    });
+    
+    sgz.geo.start();
 })(jQuery);
 </script>
     {% endif %}

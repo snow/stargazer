@@ -1,0 +1,7 @@
+{% for e in object_list %}
+<div class="li stream-item simple {% if e.is_liked %}on{% endif %}" sid="{{ e.id }}">
+  <div class="content">{{ e.content }}</div>   
+  <div class="addr">{{ e.address }}</div>
+  <div class="meta"><span class="time">{{ e.created|timesince }}</span></div>
+</div>
+{% endfor %}

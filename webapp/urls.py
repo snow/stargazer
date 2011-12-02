@@ -18,6 +18,9 @@ urlpatterns = patterns('',
                        
     url(r'^teleport/$', TeleportV.as_view()),
     
+    url(r'^user/(?P<slug>.+)/', UserV.as_view()),
+    url(r'^me/$', login_required(MeV.as_view())),
+    
     url(r'^signin/$', SigninV.as_view()),
     url(r'^signup/$', SignupV.as_view()),
 

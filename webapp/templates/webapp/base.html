@@ -30,7 +30,7 @@
     <div class="pg-{% block page_class %}{% endblock %}" data-role="page">
         <div data-role="header">
             <div class="logogroup">{% block logo %}<a class="logo" href="/w/">SGZ</a><span class="logo_sp">&lt;</span><h1 class="page_title">{% block page_title %}{% endblock %}</h1>{% endblock %}</div>
-            {% block hd_buttons %}<a class="ui-btn-right login_required" href="/w/posts/create/" data-ajax="false" data-icon="plus">Post</a>{% endblock %}
+            {% block hd_buttons %}<a class="ui-btn-right login_required" href="/w/posts/create/" data-ajax="false" data-theme="c" data-icon="plus">Post</a>{% endblock %}
         </div>
         <div data-role="content">{% block bd %}{% endblock %}</div>
         {% if request.user.is_authenticated %}    
