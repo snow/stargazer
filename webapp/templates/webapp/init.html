@@ -18,7 +18,7 @@ body {text-align:center}
     <div class="indicator">
         loading...
     </div>
-    
+    {% csrf_token %}
     {% if debug %}    
     <script src="{{ STATIC_URL }}common/s/jquery-1.6.4.min.js"></script>
     <script src="{{ STATIC_URL }}common/s/jquery.mobile-1.0.min.js"></script>
@@ -41,6 +41,7 @@ function go_dashboard(){
 
 pyrcp.j_doc.one(sgz.geo.E_LATLNG_DONE, go_dashboard);
 pyrcp.j_doc.one(sgz.geo.E_LATLNG_FAIL, go_dashboard);
+pyrcp.j_doc.one(sgz.geo.E_ADDR_FAIL, go_dashboard);
 sgz.geo.start({
     'enableHighAccuracy': true,
     'maximumAge': 0
