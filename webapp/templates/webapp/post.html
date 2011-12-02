@@ -1,7 +1,7 @@
 {% extends 'webapp/base.html' %}
 
-{% block title %}发帖{% endblock %}
-{% block page_title %}发帖{% endblock %}
+{% block title %}Post{% endblock %}
+{% block page_title %}Post{% endblock %}
 {% block page_class %}post_create{% endblock %}
 {% block hd_buttons %}
 <form id="shadow_post_form_to_init" action="/api/posts/create.json" data-ajax="false" method="POST"
@@ -11,20 +11,20 @@
     <input type="hidden" name="longitude" />
     <input type="hidden" name="address" />
     <input type="hidden" name="return" value="/w/posts/" />
-    <input type="submit" disabled="disabled" value="发表" data-icon="check" data-theme="b" />
+    <input type="submit" disabled="disabled" value="Post" data-icon="check" data-theme="b" />
 </form>
 {% endblock %}
 
 {% block bd %}
 <form id="post_form_to_init" action="/api/posts/create/" method="POST" class="shown_post_form">
-    <textarea name="content" {% if not form.is_bound %}placeholder="What's on your mind?"{% endif %}></textarea>
+    <textarea name="content" placeholder="What's on your mind?"></textarea>
 </form>
 <div class="locbar">
     <span class="stat"></span>
     <span class="addr"></span>
     <span class="lat"></span>
     <span class="lng"></span>
-    <a class="teleport" href="/w/teleport/?to={{ request.get_full_path }}">[传送门]</a>
+    <a class="teleport" href="/w/teleport/?to={{ request.get_full_path }}">[Teleport]</a>
 </div>
 <script>
 (function($){

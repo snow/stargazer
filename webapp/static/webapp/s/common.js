@@ -351,28 +351,24 @@
 (function($){
     sgz.forms = {};
     
-    sgz.forms.S_TEXT = '[type=text],[type=password], textarea';
+    sgz.forms.S_TEXT = '[type=text], [type=password], textarea';
     
     sgz.forms.init = function(j_form){
         j_form.find(sgz.forms.S_TEXT).each(function(idx, el){
             var j_t = $(el);
             if('' === j_t.val()){
                 j_t.addClass('virgin');
-                if('password' !== j_t.attr('type')){
-                    j_t.val(j_t.attr('placeholder'));
-                }
-            } else if(j_t.val() === j_t.attr('placeholder')){
-                j_t.addClass('virgin');
             }
         });
         
-        j_form.find('.virgin[type=text], textarea.virgin').
-                one('focus', function(evt){
-            $(this).select();
-        });
-        
-        j_form.find('.virgin').one('keyup', function(evt){
-            $(this).removeClass('virgin');
+        j_form.find('.virgin').keyup(function(evt){
+            var j_t = $(this);
+            
+            if('' === j_t.val()){
+                j_t.addClass('virgin');
+            } else {
+                j_t.removeClass('virgin');
+            }
         });
     };
     
@@ -425,9 +421,9 @@
             });
         });
         
-        j_page.bind('pageshow', function(){
+        /*j_page.bind('pageshow', function(){
             j_post_form_content.trigger('focus');
-        });
+        });*/
     };
     
     sgz.forms.custom_submit = function(j_form){
