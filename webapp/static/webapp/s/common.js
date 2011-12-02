@@ -45,42 +45,53 @@
     };
 
     sgz.stream.ban = function(anchor) {
-        var j_stream_item = $(anchor).closest('.stream-item'),
-            id = j_stream_item.attr('sid');
-
-        return pyrcp.post('/api/posts/ban/'+id+'/', {
-            'success': function(data){
-                j_stream_item.hide('fast', function() {
-                    $(this).remove();
-                });
-            },
-            'dataType': 'json'
-        });
+        var j_anchor = $(anchor);
+        if(sgz.is_signedin){
+            var j_stream_item = j_anchor.closest('.stream-item'),
+                id = j_stream_item.attr('sid');
+    
+            return pyrcp.post('/api/posts/ban/'+id+'/', {
+                'success': function(data){
+                    j_stream_item.hide('fast', function() {
+                        $(this).remove();
+                    });
+                },
+                'dataType': 'json'
+            });
+        } else {
+            var j_page = j_anchor.closest('[data-role=page]');
+            $.mobile.changePage('/w/signin/?next='+j_page.attr('data-url'));
+        }
     };
 
     sgz.stream.like = function(anchor) {
-        var j_anchor = $(anchor),
-            cur_like_cnt = parseInt(j_anchor.text()),
-            j_stream_item = j_anchor.closest('.stream-item'),
-            id = j_stream_item.attr('sid');
-
-        if('NaN' === cur_like_cnt.toString())
-        {
-            cur_like_cnt = 0;
+        var j_anchor = $(anchor);
+        if(sgz.is_signedin){
+            var cur_like_cnt = parseInt(j_anchor.text()),
+                j_stream_item = j_anchor.closest('.stream-item'),
+                id = j_stream_item.attr('sid');
+    
+            if('NaN' === cur_like_cnt.toString())
+            {
+                cur_like_cnt = 0;
+            }
+    
+            return pyrcp.post('/api/posts/like/'+id+'/', {
+                'success': function(data){
+                    if(j_stream_item.hasClass('on')) {
+                        j_anchor.text(Math.max(0, cur_like_cnt-1));
+                        j_stream_item.removeClass('on');
+                    } else {
+                        j_anchor.text(cur_like_cnt+1);
+                        j_stream_item.addClass('on');
+                    }
+                },
+                'dataType': 'json'
+            });
+        } else {
+            var j_page = j_anchor.closest('[data-role=page]');
+            $.mobile.changePage('/w/signin/?next='+j_page.attr('data-url'));
         }
-
-        return pyrcp.post('/api/posts/like/'+id+'/', {
-            'success': function(data){
-                if(j_stream_item.hasClass('on')) {
-                    j_anchor.text(Math.max(0, cur_like_cnt-1));
-                    j_stream_item.removeClass('on');
-                } else {
-                    j_anchor.text(cur_like_cnt+1);
-                    j_stream_item.addClass('on');
-                }
-            },
-            'dataType': 'json'
-        });
     };
 })(jQuery);
 
@@ -433,6 +444,10 @@
             pyrcp.post(j_form.attr('action'), {
                 data: j_form.serialize(),
                 success: function(data){
+                    if(data.is_signedin){
+                        sgz.is_signedin = true;
+                    }
+                    
                     if(data.go_to){
                         $.mobile.changePage(data.go_to);
                     } else {

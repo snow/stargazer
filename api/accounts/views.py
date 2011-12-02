@@ -46,6 +46,7 @@ class SigninV(View):
                 return HttpResponse(json.dumps({
                                         'done': True,
                                         'user_id': form.get_user().id,
+                                        'is_signedin': True,
                                         'go_to': redirect_to
                                     }),
                                     content_type='application/json')
@@ -85,6 +86,7 @@ class SignupV(View):
                     return HttpResponse(json.dumps({
                                             'done': True,
                                             'user_id': user.id,
+                                            'is_signedin': True,
                                             'go_to': redirect_to
                                         }),
                                         content_type='application/json')
