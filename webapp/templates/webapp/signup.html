@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block bd %}
-<form class="signupform" action="/api/accounts/signup.json" data-ajax="false" method="POST">
+<form id="form_to_init" class="signupform" action="/api/accounts/signup.json" data-ajax="false" method="POST">
     <div class="row">
         <input type="text" name="username" placeholder="username" required="required" />
     </div>
@@ -27,7 +27,7 @@
 <div class="hsp">Have an account? <a href="/w/signin/?next={{ request.GET.next }}">Signin</a></div>
 <script>
 (function($){
-    var j_form = $('.pg-signup .signupform');
+    var j_form = $('#form_to_init').removeAttr('id');
         
     sgz.forms.init(j_form);
     sgz.forms.custom_submit(j_form);

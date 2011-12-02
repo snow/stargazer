@@ -351,7 +351,7 @@
 (function($){
     sgz.forms = {};
     
-    sgz.forms.S_TEXT = '[type=text],[type=password]';
+    sgz.forms.S_TEXT = '[type=text],[type=password], textarea';
     
     sgz.forms.init = function(j_form){
         j_form.find(sgz.forms.S_TEXT).each(function(idx, el){
@@ -366,12 +366,67 @@
             }
         });
         
-        j_form.find('.virgin[type=text]').one('focus', function(evt){
+        j_form.find('.virgin[type=text], textarea.virgin').
+                one('focus', function(evt){
             $(this).select();
         });
         
         j_form.find('.virgin').one('keyup', function(evt){
             $(this).removeClass('virgin');
+        });
+    };
+    
+    sgz.forms.init_post_form = function(j_post_form, j_shadow_form){
+        sgz.forms.init(j_post_form);
+        
+        var j_page = j_post_form.closest('[data-role=page]'),
+            j_post_form_content = j_post_form.find('[name=content]'),      
+            j_shadow_form_content = j_shadow_form.find('[name=content]'),
+            j_submit = j_shadow_form.find('[type=submit]');
+            
+        j_page.one('pageinit', function(){
+            j_post_form_content.keyup(function(evt){
+                j_shadow_form_content.val(j_post_form_content.val());
+                
+                if(j_submit.button('option', 'disabled') &&
+                    0 < j_shadow_form_content.val().length && 
+                        sgz.geo.initialized){
+                    j_submit.button('enable');
+                }
+                
+                if(0 === j_shadow_form_content.val().length){
+                    j_submit.button('disable');
+                }
+            });
+            
+            pyrcp.j_doc.one(sgz.geo.E_LATLNG_DONE, function(evt){
+                if(0 < j_shadow_form_content.val().length){
+                    j_submit.button('enable');
+                }
+            });
+            sgz.geo.start();
+            
+            j_shadow_form.submit(function(evt){
+                evt.preventDefault();
+                
+                // do it again 
+                // to avoid losing Chinese input method generated content
+                j_shadow_form_content.val(j_post_form_content.val());
+                
+                pyrcp.post(j_shadow_form.attr('action'), {
+                    data: j_shadow_form.serialize(),
+                    success: function(data){
+                        $.mobile.changePage(data.go_to);
+                    },
+                    fail: function(data){
+                        //TODO
+                    }
+                });
+            });
+        });
+        
+        j_page.bind('pageshow', function(){
+            j_post_form_content.trigger('focus');
         });
     };
     
@@ -422,6 +477,7 @@
         });
     }
 })(jQuery);
+
 /**
  * handle login_required links
  * -----------------------------
@@ -439,6 +495,88 @@
     
     pyrcp.j_doc.delegate('a.login_required[data-ajax=false]', 'click', 
                          do_login_required_link);
+})(jQuery);
+
+/**
+ * handle map
+ * -----------------------------
+ */
+(function($){
+    sgz.map = {};
+    
+    var j_page,
+        j_map,
+        is_map_handled = false;
+            
+    function setup_map(evt){
+        if(is_map_handled){ 
+            return; 
+        } else {
+            is_map_handled = true;
+        }
+        
+        var j_map_container = j_page.find('.map_container'),
+            j_overlay = j_map_container.find('.overlay'),
+            hd_height = j_page.find('.ui-header').height() +
+                            j_page.find('.locbar').height(),
+            container_height = 400;
+            
+        if(-1 < navigator.userAgent.indexOf('Android')){
+            container_height = screen.availHeight - hd_height;
+        } else if(-1 < navigator.userAgent.indexOf('iPhone')){
+            container_height = screen.availHeight - 120;
+        } else {
+            container_height = screen.availHeight - 150;
+        }
+        
+        j_map_container.height(container_height);
+        j_overlay.css({
+            'top': (j_map_container.height() / 2 - j_overlay.height() / 2),
+            'left': (j_map_container.width() / 2 - j_overlay.width() / 2)
+        });
+    }
+    
+    function load_map(el_map, lat, lng){
+        var gmap = new google.maps.Map(el_map, {
+            zoom: 13,
+            center: new google.maps.LatLng(lat, lng),
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            disableDefaultUI: true,
+            zoomControl: true,
+            zoomControlOptions: {
+                position: google.maps.ControlPosition.LEFT_BOTTOM,
+                style: google.maps.ZoomControlStyle.SMALL
+            }
+        });
+
+        google.maps.event.addListener(gmap, 'dragend', function(e){
+            var center = gmap.center;
+                lat = sgz.geo.trunk_latlng(center.lat()),
+                lng = sgz.geo.trunk_latlng(center.lng());
+                
+            pyrcp.j_doc.trigger(sgz.geo.E_ADDR_START, [lat, lng]);
+        });
+    }
+    
+    sgz.map.init = function(j_t){
+        j_page = j_t.closest('[data-role=page]');
+        j_map = j_page.find('.map');
+        
+        // on one of below event triggered, we're ready to setup map
+        pyrcp.j_doc.one(sgz.geo.E_ADDR_START, setup_map);
+        pyrcp.j_doc.one(sgz.geo.E_LATLNG_DONE, setup_map);                    
+    
+        pyrcp.j_doc.one(sgz.geo.E_LATLNG_DONE, function(evt, lat, lng, addr){
+            load_map(j_map.get(0), lat, lng);
+        });
+        
+        j_page.one('pageshow', function(evt){
+            sgz.geo.start({
+                'enableHighAccuracy': false,
+                'maximumAge': 'infinity'
+            });
+        });
+    }
 })(jQuery);
 
 /**

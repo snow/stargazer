@@ -15,7 +15,7 @@
 <p>Your username and password didn't match. Please try again.</p>
 {% endif %}
 
-<form class="signinform" method="post" data-ajax="false" action="/api/accounts/signin.json">
+<form id="form_to_init" class="signinform" method="post" data-ajax="false" action="/api/accounts/signin.json">
     <div class="row">
         <input type="text" name="username" placeholder="username" required="required" />
     </div>
@@ -31,7 +31,7 @@
 <div class="hsp">Don't have an account? <a href="/w/signup?next={{ request.GET.next }}">Signup</a></div>
 <script>
 (function($){
-    var j_form = $('.pg-signin .signinform');
+    var j_form = $('#form_to_init').removeAttr('id');
         
     sgz.forms.init(j_form);
     sgz.forms.custom_submit(j_form);

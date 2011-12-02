@@ -4,7 +4,7 @@
 {% block page_title %}发帖{% endblock %}
 {% block page_class %}post_create{% endblock %}
 {% block hd_buttons %}
-<form action="/api/posts/create.json" data-ajax="false" method="POST"
+<form id="shadow_post_form_to_init" action="/api/posts/create.json" data-ajax="false" method="POST"
     class="hidden_post_form locform{% if not form.is_bound %} new{% endif %}">
     <input type="hidden" name="content" />
     <input type="hidden" name="latitude" />
@@ -16,9 +16,8 @@
 {% endblock %}
 
 {% block bd %}
-<form action="/api/posts/create/" method="POST"
-    class="shown_post_form {% if not form.is_bound %} new{% endif %}">
-    <textarea name="content">{% if not form.is_bound %}What's on your mind?{% endif %}</textarea>
+<form id="post_form_to_init" action="/api/posts/create/" method="POST" class="shown_post_form">
+    <textarea name="content" {% if not form.is_bound %}placeholder="What's on your mind?"{% endif %}></textarea>
 </form>
 <div class="locbar">
     <span class="stat"></span>
@@ -29,61 +28,9 @@
 </div>
 <script>
 (function($){
-    var j_page = $('.pg-post_create'),
-        j_shown_form = j_page.find('.shown_post_form'),
-        j_shown_content = j_shown_form.find('[name=content]'),
-        j_hidden_form = j_page.find('.hidden_post_form'),        
-        j_hidden_content = j_hidden_form.find('[name=content]'),
-        j_submit = j_hidden_form.find('[type=submit]');
-        
-    j_page.one('pageinit', function(){
-        j_shown_content.focus(function(evt){
-            $(this).select();
-        }).
-        keydown(function(evt){
-            j_shown_form.removeClass('new');
-        }).
-        keyup(function(evt){
-            j_hidden_content.val(j_shown_content.val());
-            
-            if(j_submit.button('option', 'disabled') &&
-                0 < j_hidden_content.val().length && 
-                    sgz.geo.initialized){
-                j_submit.button('enable');
-            }
-            
-            if(0 === j_hidden_content.val().length){
-                j_submit.button('disable');
-            }
-        });
-        
-        pyrcp.j_doc.one(sgz.geo.E_LATLNG_DONE, function(evt){
-            if(0 < j_hidden_content.val().length){
-                j_submit.button('enable');
-            }
-        });
-        sgz.geo.start();
-        
-        j_hidden_form.submit(function(evt){
-            evt.preventDefault();
-            
-            pyrcp.post(j_hidden_form.attr('action'), {
-                data: j_hidden_form.serialize(),
-                success: function(data){
-                    $.mobile.changePage(data.go_to);
-                },
-                fail: function(data){
-                    //TODO
-                }
-            });
-        });
-    });
-    
-    j_page.bind('pageshow', function(){
-        j_shown_form.find('[name=content]').focus();
-    });
-    
-})(jQuery);
+    sgz.forms.init_post_form($('#post_form_to_init').removeAttr('id'),
+                             $('#shadow_post_form_to_init').removeAttr('id'));
+})(jQuery);    
 </script>
 {% endblock %}
 
