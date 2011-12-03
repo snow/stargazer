@@ -3,9 +3,53 @@
  * --------------------
  */
 (function($){
-    window.sgz = {}
+    window.sgz = {
+        // every time page loaded into dom this value will be updated
+        is_signedin: false
+    }
 })(jQuery);
-
+/*
+ * tools for jqm pages
+ * ------------------
+ */
+(function($){
+    var params = {};
+    sgz.pg = {};
+    
+    sgz.pg.add_param = function(page, param, value){
+        if('undefined' === typeof params[page]){
+            params[page] = {}
+        }
+        
+        params[page][param] = value;
+    };
+    
+    sgz.pg.add_params = function(page, params){
+        params[page] = params;
+    };
+    
+    sgz.pg.get_param = function(page, param, default_){
+        if('undefined' === typeof params[page]){
+            return default_;
+        } else if('undefined' === typeof params[page][param]) {
+            return default_;
+        } else {
+            return params[page][param];
+        }
+    };
+    
+    sgz.pg.get_params = function(page){
+        if('undefined' === typeof params[page]){
+            return {};
+        } else {
+            return params[page];
+        }
+    };
+    
+    sgz.pg.clear_params = function(page){
+        delete params[page];
+    };
+})(jQuery);
 /*
  * tools for stream
  * ------------------
@@ -32,14 +76,30 @@
         }).delegate('.stream-item .like', 'click', function() {
             sgz.stream.like(this);
         });
+        
+        pyrcp.j_doc.delegate('.pg-post_list', 'pagebeforeshow', function(){
+            if(sgz.pg.get_param('post_list', 'refresh', false)){
+                sgz.stream.load(j_stream, params);
+            }
+            sgz.pg.clear_params('post_list');
+        });
     };
 
     sgz.stream.load = function(j_stream, params){
+        if(j_stream.hasClass('ing')){
+            return;
+        } else {
+            j_stream.addClass('ing');
+        }
+        
         $.ajax(j_stream.attr('content_uri'), {
-            'type': 'GET',
-            'data': params,
-            'success': function(data){
+            type: 'GET',
+            data: params,
+            success: function(data){
                 j_stream.append(data);
+            },
+            complete: function(){
+                j_stream.removeClass('ing');
             }
         });
     };
@@ -437,6 +497,9 @@
                 pyrcp.post(j_shadow_form.attr('action'), {
                     data: j_shadow_form.serialize(),
                     success: function(data){
+                        j_post_form_content.val('');
+                        j_shadow_form_content.val('');
+                        sgz.pg.add_param('post_list', 'refresh', true);
                         $.mobile.changePage(data.go_to);
                     },
                     error: function(data){
