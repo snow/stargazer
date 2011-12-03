@@ -135,8 +135,8 @@ if '__main__' == __name__:
                     
                 worker.shutdown_flag = True
                 worker.join()
-            except:
-                mail_admins('Update status service dead', sys.exc_info()[0])
+            except Exception as err:
+                mail_admins('Update status service dead', err.message)
                 raise  
             finally:
                 pid_file.close()

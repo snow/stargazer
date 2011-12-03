@@ -159,8 +159,8 @@ if '__main__' == __name__:
                                          103.93, 30.56, 104.21, 30.79,))
             except KeyboardInterrupt:
                 pass # avoid sendding email to admins
-            except:
-                mail_admins('Streaming process dead', sys.exc_info()[0])
+            except Exception as err:
+                mail_admins('Update status service dead', err.message)
                 raise           
             finally:
                 pid_file.close()
