@@ -29,7 +29,7 @@
  */
 .locbar .lat,
 .locbar .lng {display:none}
-.locbar .teleport {float:right; text-decoration:none}
+.locbar a {margin-left:5px; text-decoration:none}
 
 /*
  * stream

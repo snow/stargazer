@@ -307,6 +307,17 @@
             j_t.find('[name=address]').val(addr);
         });
     }
+    
+    function refresh_latlng(){
+        sgz.geo.initialized = false;
+        sgz.geo.lat = false;
+        sgz.geo.lng = false;
+        sgz.geo.addr = FALLBACK_ADDR;
+        sgz.geo.start({
+            'enableHighAccuracy': true,
+            'maximumAge': 0
+        });
+    }
 
     function init(){
         console && pyrcp.j_doc.bind(
@@ -335,7 +346,8 @@
         evtmap[sgz.geo.E_LATLNG_FAIL] = locbar_on_fail;        
         evtmap[sgz.geo.E_ADDR_FAIL] = locbar_on_fail;
         
-        pyrcp.j_doc.bind(evtmap);
+        pyrcp.j_doc.bind(evtmap).        
+            delegate('.locbar .refresh', 'click', refresh_latlng);
     }
     
     init();
