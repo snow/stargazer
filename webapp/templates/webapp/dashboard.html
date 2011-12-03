@@ -21,10 +21,11 @@
     
     <a class="ui-block-a login_required" data-ajax="false" rel="section" href="/w/me/">
         <dl>
-            <dt>Me</dt>
             {% if request.user.is_authenticated %}
+            <dt>{{ request.user.username }}</dt>            
             <dd>User tweets</dd>
             {% else %}
+            <dt>Me</dt>
             <dd>Signin / Signup to tweet and like/ban tweets</dd>
             {% endif %}
         </dl>

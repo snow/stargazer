@@ -416,6 +416,8 @@
             j_shadow_form.submit(function(evt){
                 evt.preventDefault();
                 
+                j_submit.button('disable');
+                
                 // do it again 
                 // to avoid losing Chinese input method generated content
                 j_shadow_form_content.val(j_post_form_content.val());
@@ -425,8 +427,11 @@
                     success: function(data){
                         $.mobile.changePage(data.go_to);
                     },
-                    fail: function(data){
+                    error: function(data){
                         //TODO
+                    },
+                    complete: function(){
+                        j_submit.button('enable');
                     }
                 });
             });
@@ -437,54 +442,60 @@
         });*/
     };
     
-    sgz.forms.custom_submit = function(j_form){
-        j_form.submit(function(evt){
-            evt.preventDefault();
+    sgz.forms.custom_submit = function(evt){
+        evt.preventDefault();
+        
+        j_form = $(evt.target),
+        j_submit = j_form.find('[type=submit]');
             
-            pyrcp.post(j_form.attr('action'), {
-                data: j_form.serialize(),
-                success: function(data){
-                    if(data.is_signedin){
-                        sgz.is_signedin = true;
-                    }
-                    
-                    if(data.go_to){
-                        $.mobile.changePage(data.go_to);
-                    } else {
-                        // TODO: non-redirect situations?
-                    }                    
-                },
-                error: function(jqXHR){
-                    try{
-                        data = $.parseJSON(jqXHR.responseText);
-                        j_form.find('.errls').empty();
-                        var errls;
-                        $.each(data.errors, function(key, errors){
-                            if('__all__' === key){
-                                errls = $('.errls.nonfield');
-                                if(0 === errls.length){
-                                    errls = $('<ul class="errls nonfield"/>').
-                                                            prependTo(j_form);
-                                }
-                            } else {
-                                errls = j_form.find('.errls.'+key);
-                                if(0 === errls.length){
-                                    errls = $('<ul class="errls '+key+'" />').
-                                        insertBefore(
-                                            j_form.find('[name='+key+']'));
-                                }
-                            }        
-                             
-                            $.each(errors, function(idx, err){
-                                errls.append('<li>'+err+'</li>');
-                            });
-                        });
-                    } catch(err) {
-                        //TODO what will extractly happen here?
-                        console && console.log(err);
-                    }
+        j_submit.button('disable');
+        
+        pyrcp.post(j_form.attr('action'), {
+            data: j_form.serialize(),
+            success: function(data){
+                if(data.is_signedin){
+                    sgz.is_signedin = true;
                 }
-            });
+                
+                if(data.go_to){
+                    $.mobile.changePage(data.go_to);
+                } else {
+                    // TODO: non-redirect situations?
+                }                    
+            },
+            error: function(jqXHR){
+                try{
+                    data = $.parseJSON(jqXHR.responseText);
+                    j_form.find('.errls').empty();
+                    var errls;
+                    $.each(data.errors, function(key, errors){
+                        if('__all__' === key){
+                            errls = $('.errls.nonfield');
+                            if(0 === errls.length){
+                                errls = $('<ul class="errls nonfield"/>').
+                                                        prependTo(j_form);
+                            }
+                        } else {
+                            errls = j_form.find('.errls.'+key);
+                            if(0 === errls.length){
+                                errls = $('<ul class="errls '+key+'" />').
+                                    insertBefore(
+                                        j_form.find('[name='+key+']'));
+                            }
+                        }        
+                         
+                        $.each(errors, function(idx, err){
+                            errls.append('<li>'+err+'</li>');
+                        });
+                    });
+                } catch(err) {
+                    //TODO what will extractly happen here?
+                    console && console.log(err);
+                }
+            },
+            complete: function(){
+                j_submit.button('enable');
+            }
         });
     }
 })(jQuery);

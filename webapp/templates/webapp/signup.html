@@ -30,7 +30,7 @@
     var j_form = $('#form_to_init').removeAttr('id');
         
     sgz.forms.init(j_form);
-    sgz.forms.custom_submit(j_form);
+    j_form.submit(sgz.forms.custom_submit);
 })(jQuery);
 </script>
 {% endblock %}
