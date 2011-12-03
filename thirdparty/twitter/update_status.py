@@ -11,6 +11,7 @@ from os.path import dirname, abspath
 
 from tweepy import OAuthHandler, API
 from django.conf import settings
+from django.core.mail import mail_admins
 from pyrcp.django.cli import setup_env
 
 settings = setup_env(__file__)
@@ -121,11 +122,11 @@ if '__main__' == __name__:
             # to force SIGINT go to main thread
             signal.signal(signal.SIGINT, _interrupt_handler)
             
-            worker = Worker()
-            worker.daemon = True
-            worker.start()
-            
             try:
+                worker = Worker()
+                worker.daemon = True
+                worker.start()
+                
                 while 1 < threading.active_count(): # more threads than the main
                     time.sleep(0.1) # just waiting for KeyboardInterrupt...
             except KeyboardInterrupt:
@@ -134,6 +135,9 @@ if '__main__' == __name__:
                     
                 worker.shutdown_flag = True
                 worker.join()
+            except:
+                mail_admins('Update status service dead', sys.exc_info()[0])
+                raise  
             finally:
                 pid_file.close()
                 os.remove(PID_PATH)
