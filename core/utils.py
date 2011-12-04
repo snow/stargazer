@@ -17,8 +17,8 @@ class LatLng2Addr():
     
     class BaseException(Exception):
         def __init__(self, *args, **kwargs):
-            if not settings.DEBUG:
-                self.message = 'failed to get address from latlng'
+            #if not settings.DEBUG:
+            self.message = 'failed to get address from latlng'
                 
             super(LatLng2Addr.BaseException, self).__init__(*args, **kwargs)
     
