@@ -192,12 +192,12 @@ LOGGING = {
             'propagate': True,
         },
         'd':{
-            'handlers': ['debug'],
-            'level': 'INFO',
+            'handlers': ['debuglog'],
+            'level': 'DEBUG',
         },
         'c':{
             'handlers': ['console'],
-            'level': 'INFO',
-        }
+            'level': 'DEBUG',
+        },
     }
 }
