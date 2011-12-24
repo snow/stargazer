@@ -176,9 +176,9 @@ LOGGING = {
             'class':'logging.StreamHandler',
             'formatter': 'custom'
         },
-        'debug': {
+        'debuglog': {
             'level': 'DEBUG',
-            'class': 'logging.TimedRotatingFileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'custom',
             'filename': PROJECT_ROOT+'/logs/debug.log',
             'when': 'd',
