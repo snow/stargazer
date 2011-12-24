@@ -16,11 +16,7 @@ class LatLng2Addr():
         self.times_total_query = 0
     
     class BaseException(Exception):
-        def __init__(self, *args, **kwargs):
-            #if not settings.DEBUG:
-            self.message = 'failed to get address from latlng'
-                
-            super(LatLng2Addr.BaseException, self).__init__(*args, **kwargs)
+        message = 'failed to get address from latlng'
     
     class ConnectionFailed(BaseException):
         message = 'failed to connect Google Geocoding service'

@@ -176,6 +176,14 @@ LOGGING = {
             'class':'logging.StreamHandler',
             'formatter': 'custom'
         },
+        'debug': {
+            'level': 'DEBUG',
+            'class': 'logging.TimedRotatingFileHandler',
+            'formatter': 'custom',
+            'filename': PROJECT_ROOT+'/logs/debug.log',
+            'when': 'd',
+            'backupCount': 7,
+        },
     },
     'loggers': {
         'django.request': {
@@ -183,11 +191,11 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'demo':{
-            'handlers': ['console'],
+        'd':{
+            'handlers': ['debug'],
             'level': 'INFO',
         },
-        'core':{
+        'c':{
             'handlers': ['console'],
             'level': 'INFO',
         }
